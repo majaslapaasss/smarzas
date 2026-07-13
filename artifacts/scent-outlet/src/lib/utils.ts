@@ -25,6 +25,6 @@ export function useCartId() {
 export function formatPrice(cents: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'EUR',
   }).format(cents / 100);
 }

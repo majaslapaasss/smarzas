@@ -96,7 +96,7 @@ export default function Checkout() {
   }
 
   // Simplified logic for shipping cost
-  const shippingCents = cart.subtotalCents >= 5000 ? 0 : 500; // Free shipping over $50
+  const shippingCents = cart.subtotalCents >= 5000 ? 0 : 500; // Free shipping over €50
   const totalCents = cart.subtotalCents + shippingCents;
 
   return (
