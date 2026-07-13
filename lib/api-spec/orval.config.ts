@@ -37,6 +37,11 @@ export default defineConfig({
           path: path.resolve(apiClientReactSrc, "custom-fetch.ts"),
           name: "customFetch",
         },
+        // The workspace uses @tanstack/react-query v5 via `catalog:`, which
+        // orval cannot parse as a version — pin it so hooks get v5 signatures.
+        query: {
+          version: 5,
+        },
       },
     },
   },
