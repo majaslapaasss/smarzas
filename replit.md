@@ -1,14 +1,16 @@
-# [Project name]
+# Scent Outlet
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An affordable perfume storefront selling men's, women's, and unisex fragrances, with browsing, cart, and guest checkout.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/scent-outlet run dev` — run the storefront frontend
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `pnpm --filter @workspace/scripts run seed-products` — seed sample perfume products (skips if products already exist)
 - Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
@@ -18,27 +20,37 @@ _Replace the heading above with the project's name, and this line with one sente
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
+- Frontend: React + Vite (`artifacts/scent-outlet`)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- API contract: `lib/api-spec/openapi.yaml`
+- DB schema: `lib/db/src/schema/products.ts`, `carts.ts`, `orders.ts`
+- API routes: `artifacts/api-server/src/routes/products.ts`, `cart.ts`, `orders.ts`
+- Product images served statically from `artifacts/api-server/public/images/` at `/api/images/*`
+- Storefront frontend: `artifacts/scent-outlet/src/pages/`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- No user accounts — carts are anonymous, identified by a random UUID generated client-side and stored in `localStorage`.
+- Checkout does not process real payments; placing an order just records the order and clears the cart.
+- Product images are AI-generated and served directly by the API server as static files (no object storage needed for this simple catalog).
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Browse perfumes by gender (men/women/unisex) and scent category, with search
+- Product detail pages with scent notes, price, and stock
+- Cart with quantity updates and removal
+- Guest checkout that creates an order and shows an order confirmation page
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Light theme with a soft, warm "skin-tone" palette (blush, cream, warm beige, soft rose) — no harsh white/gray/black.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Re-run `pnpm --filter @workspace/api-spec run codegen` after any OpenAPI spec change before using updated types in routes or the frontend.
 
 ## Pointers
 

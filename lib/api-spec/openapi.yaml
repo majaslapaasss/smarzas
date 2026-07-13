@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Scent Outlet perfume store API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product catalog
+  - name: cart
+    description: Shopping cart
+  - name: orders
+    description: Checkout and orders
 paths:
   /healthz:
     get:
@@ -24,6 +30,235 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products
+      description: List perfumes, optionally filtered by gender, category, or search text
+      parameters:
+        - name: gender
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProductGender"
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/featured:
+    get:
+      operationId: listFeaturedProducts
+      tags: [products]
+      summary: List featured products
+      description: A short curated list of bestsellers/featured perfumes for the homepage
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [products]
+      summary: List categories
+      description: List perfume scent-family categories with product counts
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  /cart/{cartId}:
+    get:
+      operationId: getCart
+      tags: [cart]
+      summary: Get a cart with its items
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /cart/{cartId}/items:
+    post:
+      operationId: addCartItem
+      tags: [cart]
+      summary: Add an item to the cart (or increase quantity if already present)
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartItemInput"
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /cart/{cartId}/items/{itemId}:
+    patch:
+      operationId: updateCartItem
+      tags: [cart]
+      summary: Update the quantity of a cart item
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartItemUpdate"
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Not found
+    delete:
+      operationId: removeCartItem
+      tags: [cart]
+      summary: Remove an item from the cart
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Not found
+
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place an order (checkout)
+      description: Converts a cart into an order and clears the cart. No real payment is processed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Created order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid input (e.g. empty cart)
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get an order (order confirmation)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +269,174 @@ components:
       required:
         - status
 
+    ProductGender:
+      type: string
+      enum: [men, women, unisex]
+
+    Category:
+      type: object
+      required: [id, name, slug, productCount]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        productCount:
+          type: integer
+
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - brand
+        - gender
+        - description
+        - scentNotes
+        - category
+        - priceCents
+        - imageUrl
+        - stock
+        - featured
+        - createdAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        brand:
+          type: string
+        gender:
+          $ref: "#/components/schemas/ProductGender"
+        description:
+          type: string
+        scentNotes:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+        priceCents:
+          type: integer
+        imageUrl:
+          type: string
+        stock:
+          type: integer
+        featured:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CartItemInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+
+    CartItemUpdate:
+      type: object
+      required: [quantity]
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+
+    CartItem:
+      type: object
+      required: [id, quantity, product]
+      properties:
+        id:
+          type: integer
+        quantity:
+          type: integer
+        product:
+          $ref: "#/components/schemas/Product"
+
+    Cart:
+      type: object
+      required: [cartId, items, subtotalCents]
+      properties:
+        cartId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        subtotalCents:
+          type: integer
+
+    OrderInput:
+      type: object
+      required:
+        [cartId, customerName, customerEmail, shippingAddress, city, postalCode]
+      properties:
+        cartId:
+          type: string
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        shippingAddress:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+
+    OrderItem:
+      type: object
+      required: [id, quantity, priceCentsAtPurchase, product]
+      properties:
+        id:
+          type: integer
+        quantity:
+          type: integer
+        priceCentsAtPurchase:
+          type: integer
+        product:
+          $ref: "#/components/schemas/Product"
+
+    Order:
+      type: object
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - shippingAddress
+        - city
+        - postalCode
+        - totalCents
+        - status
+        - items
+        - createdAt
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        shippingAddress:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        totalCents:
+          type: integer
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        createdAt:
+          type: string
+          format: date-time
