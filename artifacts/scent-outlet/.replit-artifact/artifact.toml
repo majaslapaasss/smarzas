@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Scent Outlet"
+title = "Perfume Baltic"
 version = "1.0.0"
 id = "artifacts/scent-outlet"
 router = "path"

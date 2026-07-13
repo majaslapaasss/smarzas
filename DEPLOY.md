@@ -1,4 +1,4 @@
-# Deploying Scent Outlet
+# Deploying Perfume Baltic
 
 The store deploys as **one Node.js web service**: the Express API serves the
 JSON API, the product images, and the built React storefront from the same

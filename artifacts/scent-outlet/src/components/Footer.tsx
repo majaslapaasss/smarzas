@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="font-serif text-2xl font-semibold tracking-tight text-foreground block mb-4">
-              Scent Outlet
+              Perfume Baltic
             </Link>
             <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
               Discover your signature scent without the luxury markup. We bring you quality fragrances for men, women, and everyone in between.
@@ -32,7 +32,7 @@ export function Footer() {
           </div>
         </div>
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Scent Outlet. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Perfume Baltic. All rights reserved.</p>
           <div className="flex gap-4">
             <span className="cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>
             <span className="cursor-pointer hover:text-foreground transition-colors">Terms of Service</span>

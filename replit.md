@@ -1,4 +1,4 @@
-# Scent Outlet
+# Perfume Baltic
 
 An affordable perfume storefront selling men's, women's, and unisex fragrances, with browsing, cart, and guest checkout.
 

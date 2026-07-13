@@ -5,7 +5,7 @@ const IMAGE_BASE = "/api/images";
 const products: (typeof productsTable.$inferInsert)[] = [
   {
     name: "Amber Bloom",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "women",
     description:
       "A warm floral amber that opens with jasmine and settles into a soft, sun-kissed base. Made for everyday wear that still feels special.",
@@ -18,7 +18,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Velvet Rose",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "women",
     description:
       "Rich Turkish rose layered over creamy sandalwood, finished with a whisper of vanilla. Romantic without being heavy.",
@@ -31,7 +31,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Citrus Breeze",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "unisex",
     description:
       "Bright Sicilian lemon and grapefruit over a clean green base. The scent equivalent of throwing open the windows on a spring morning.",
@@ -44,7 +44,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Midnight Oud",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "men",
     description:
       "Deep, smoky oud wrapped in leather and dark spice. A bold signature scent for evenings that call for presence.",
@@ -57,7 +57,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Vanilla Suede",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "unisex",
     description:
       "Soft vanilla bean folded into buttery suede and warm tonka bean. Cozy, skin-like, and endlessly wearable.",
@@ -70,7 +70,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Sea Salt Musk",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "men",
     description:
       "A crisp aquatic musk with driftwood and sea salt. Fresh enough for the gym, refined enough for the office.",
@@ -83,7 +83,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Golden Oak",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "men",
     description:
       "Toasted oak and cedar with a golden thread of amber running through. Grounded, confident, built to last all day.",
@@ -96,7 +96,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Peony Silk",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "women",
     description:
       "Delicate peony petals over silky white musk, with a touch of pear for sweetness. Light, pretty, and easy to fall in love with.",
@@ -109,7 +109,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Fresh Linen",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "unisex",
     description:
       "The scent of line-dried sheets and clean cotton, softened with a touch of white flowers. Understated and comforting.",
@@ -122,7 +122,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Spiced Leather",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "men",
     description:
       "Supple leather warmed by cardamom and clove. A confident, spice-forward scent with real depth.",
@@ -135,7 +135,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Coconut Vetiver",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "unisex",
     description:
       "Creamy coconut meets earthy vetiver for a scent that feels like a beach vacation and a walk in the woods at once.",
@@ -148,7 +148,7 @@ const products: (typeof productsTable.$inferInsert)[] = [
   },
   {
     name: "Cashmere Musk",
-    brand: "Scent Outlet",
+    brand: "Perfume Baltic",
     gender: "women",
     description:
       "The softest musk we make, blended with iris and warm cashmere accord. Understated luxury for daily wear.",

@@ -18,7 +18,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div className="max-w-2xl">
               <span className="text-primary font-medium tracking-wider uppercase text-sm mb-4 block">
-                Welcome to Scent Outlet
+                Welcome to Perfume Baltic
               </span>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-foreground mb-6">
                 Your signature scent, <br />

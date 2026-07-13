@@ -19,7 +19,7 @@ export function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2">
               <span className="font-serif text-2xl font-semibold tracking-tight text-foreground">
-                Scent Outlet
+                Perfume Baltic
               </span>
             </Link>
           </div>
