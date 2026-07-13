@@ -1,12 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
-import {
-  cartItemsTable,
-  db,
-  orderItemsTable,
-  ordersTable,
-  productsTable,
-} from "@workspace/db";
+import { db, orderItemsTable, ordersTable } from "@workspace/db";
 import {
   CreateOrderBody,
   CreateOrderResponse,
@@ -14,32 +8,18 @@ import {
   GetOrderResponse,
 } from "@workspace/api-zod";
 import { loadCart } from "../lib/cart";
+import { loadOrderForResponse } from "../lib/orders";
+import {
+  buildPayseraPaymentUrl,
+  calculateShippingCents,
+  createStripeCheckoutSession,
+  getBaseUrl,
+  isPayseraConfigured,
+  isStripeConfigured,
+} from "../lib/payments";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
-
-async function loadOrder(orderId: number) {
-  const [order] = await db
-    .select()
-    .from(ordersTable)
-    .where(eq(ordersTable.id, orderId));
-
-  if (!order) {
-    return null;
-  }
-
-  const items = await db
-    .select({
-      id: orderItemsTable.id,
-      quantity: orderItemsTable.quantity,
-      priceCentsAtPurchase: orderItemsTable.priceCentsAtPurchase,
-      product: productsTable,
-    })
-    .from(orderItemsTable)
-    .innerJoin(productsTable, eq(orderItemsTable.productId, productsTable.id))
-    .where(eq(orderItemsTable.orderId, orderId));
-
-  return { ...order, items };
-}
 
 router.post("/orders", async (req, res): Promise<void> => {
   const parsed = CreateOrderBody.safeParse(req.body);
@@ -55,13 +35,31 @@ router.post("/orders", async (req, res): Promise<void> => {
     shippingAddress,
     city,
     postalCode,
+    paymentMethod,
   } = parsed.data;
+
+  if (paymentMethod === "stripe" && !isStripeConfigured()) {
+    res.status(503).json({
+      error: "Card payments are not configured (missing STRIPE_SECRET_KEY)",
+    });
+    return;
+  }
+  if (paymentMethod === "paysera" && !isPayseraConfigured()) {
+    res.status(503).json({
+      error:
+        "Paysera payments are not configured (missing PAYSERA_PROJECT_ID / PAYSERA_SIGN_PASSWORD)",
+    });
+    return;
+  }
 
   const cart = await loadCart(cartId);
   if (cart.items.length === 0) {
     res.status(400).json({ error: "Cart is empty" });
     return;
   }
+
+  const shippingCents = calculateShippingCents(cart.subtotalCents);
+  const totalCents = cart.subtotalCents + shippingCents;
 
   const [order] = await db
     .insert(ordersTable)
@@ -71,8 +69,10 @@ router.post("/orders", async (req, res): Promise<void> => {
       shippingAddress,
       city,
       postalCode,
-      totalCents: cart.subtotalCents,
-      status: "placed",
+      totalCents,
+      status: "pending",
+      cartId,
+      paymentMethod,
     })
     .returning();
 
@@ -90,10 +90,43 @@ router.post("/orders", async (req, res): Promise<void> => {
     })),
   );
 
-  await db.delete(cartItemsTable).where(eq(cartItemsTable.cartId, cartId));
+  // The cart is intentionally NOT cleared here — it is cleared once payment
+  // succeeds (webhook/callback/verify), so a cancelled payment keeps the bag.
 
-  const fullOrder = await loadOrder(order.id);
-  res.status(201).json(CreateOrderResponse.parse(fullOrder));
+  const baseUrl = getBaseUrl(req);
+  let paymentUrl: string;
+  try {
+    if (paymentMethod === "stripe") {
+      const session = await createStripeCheckoutSession(
+        order,
+        cart.items.map((item) => ({
+          name: `${item.product.brand} — ${item.product.name}`,
+          quantity: item.quantity,
+          priceCents: item.product.priceCents,
+        })),
+        shippingCents,
+        baseUrl,
+      );
+      paymentUrl = session.url;
+      await db
+        .update(ordersTable)
+        .set({ paymentSessionId: session.sessionId })
+        .where(eq(ordersTable.id, order.id));
+    } else {
+      paymentUrl = buildPayseraPaymentUrl(order, baseUrl);
+    }
+  } catch (err) {
+    logger.error({ err }, "Failed to create payment session");
+    await db
+      .delete(orderItemsTable)
+      .where(eq(orderItemsTable.orderId, order.id));
+    await db.delete(ordersTable).where(eq(ordersTable.id, order.id));
+    res.status(502).json({ error: "Failed to start payment. Please try again." });
+    return;
+  }
+
+  const fullOrder = await loadOrderForResponse(order.id);
+  res.status(201).json(CreateOrderResponse.parse({ ...fullOrder, paymentUrl }));
 });
 
 router.get("/orders/:id", async (req, res): Promise<void> => {
@@ -103,7 +136,7 @@ router.get("/orders/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const order = await loadOrder(params.data.id);
+  const order = await loadOrderForResponse(params.data.id);
   if (!order) {
     res.status(404).json({ error: "Order not found" });
     return;

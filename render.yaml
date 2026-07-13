@@ -15,3 +15,13 @@ services:
         value: 24.16.0
       - key: DATABASE_URL
         sync: false # paste your Neon connection string in the Render dashboard
+      - key: STRIPE_SECRET_KEY
+        sync: false # sk_test_... from https://dashboard.stripe.com/test/apikeys
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false # optional: whsec_... if you add a Stripe webhook endpoint
+      - key: PAYSERA_PROJECT_ID
+        sync: false # your Paysera project id from https://bank.paysera.com
+      - key: PAYSERA_SIGN_PASSWORD
+        sync: false # the Paysera project's sign password
+      - key: PAYSERA_TEST
+        value: "1" # 1 = Paysera test payments; set to 0 to accept real money

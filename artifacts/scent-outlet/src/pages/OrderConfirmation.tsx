@@ -1,18 +1,50 @@
+import { useEffect, useRef } from 'react';
 import { useRoute, Link } from 'wouter';
-import { useGetOrder } from '@workspace/api-client-react';
+import {
+  useGetOrder,
+  useVerifyStripePayment,
+  getGetOrderQueryKey,
+} from '@workspace/api-client-react';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Package, MapPin, Mail, Calendar } from 'lucide-react';
+import { CheckCircle2, Clock, Package, MapPin, Mail, Calendar } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function OrderConfirmation() {
   const { t, language } = useTranslation();
   const [, params] = useRoute('/order/:id');
   const orderId = parseInt(params?.id || '0', 10);
-  
+
   const { data: order, isLoading, isError } = useGetOrder(orderId, {
-    query: { enabled: !!orderId }
+    query: {
+      enabled: !!orderId,
+      // While the order awaits payment confirmation (e.g. the Paysera
+      // callback), poll until the status flips to paid.
+      refetchInterval: (query) =>
+        query.state.data?.status === 'pending' ? 3000 : false,
+    }
   });
+
+  // On return from Stripe Checkout the URL carries ?session_id=...; confirm
+  // it with the server (works even without a webhook configured).
+  const verifyStripe = useVerifyStripePayment();
+  const queryClient = useQueryClient();
+  const verifiedRef = useRef(false);
+  const sessionId = new URLSearchParams(window.location.search).get('session_id');
+
+  useEffect(() => {
+    if (!sessionId || !orderId || verifiedRef.current) return;
+    verifiedRef.current = true;
+    verifyStripe.mutate(
+      { data: { orderId, sessionId } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getGetOrderQueryKey(orderId) });
+        },
+      }
+    );
+  }, [sessionId, orderId]);
 
   if (isLoading) {
     return (
@@ -34,18 +66,36 @@ export default function OrderConfirmation() {
     );
   }
 
+  const isPendingPayment = order.status === 'pending';
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-4xl">
       <div className="text-center mb-12">
-        <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 mb-6">
-          <CheckCircle2 className="h-10 w-10" />
-        </div>
-        <h1 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-4">
-          {t('thankYou')}
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          {t('orderReceived')}
-        </p>
+        {isPendingPayment ? (
+          <>
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-6">
+              <Clock className="h-10 w-10 animate-pulse" />
+            </div>
+            <h1 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-4">
+              {t('awaitingPayment')}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {t('awaitingPaymentText')}
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 mb-6">
+              <CheckCircle2 className="h-10 w-10" />
+            </div>
+            <h1 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-4">
+              {t('thankYou')}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {t('orderReceived')}
+            </p>
+          </>
+        )}
       </div>
 
       <div className="bg-card border border-border rounded-3xl overflow-hidden mb-12">

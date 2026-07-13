@@ -8,6 +8,10 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// Behind Render's proxy; needed so req.protocol reflects https for payment
+// redirect URLs.
+app.set("trust proxy", true);
+
 app.use(
   pinoHttp({
     logger,
@@ -28,6 +32,9 @@ app.use(
   }),
 );
 app.use(cors());
+// Stripe webhook signatures are computed over the raw body, so it must be
+// mounted before the JSON parser.
+app.use("/api/payments/stripe/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

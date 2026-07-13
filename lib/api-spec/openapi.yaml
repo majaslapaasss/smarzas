@@ -221,7 +221,9 @@ paths:
       operationId: createOrder
       tags: [orders]
       summary: Place an order (checkout)
-      description: Converts a cart into an order and clears the cart. No real payment is processed.
+      description: >-
+        Creates a pending order from a cart and returns a payment redirect URL
+        (Stripe Checkout or Paysera). The cart is cleared once payment succeeds.
       requestBody:
         required: true
         content:
@@ -256,6 +258,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+  /payments/stripe/verify:
+    post:
+      operationId: verifyStripePayment
+      tags: [orders]
+      summary: Verify a Stripe Checkout session after redirect
+      description: >-
+        Called by the storefront when the customer returns from Stripe Checkout.
+        Confirms the session is paid and marks the order as paid.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StripeVerifyInput"
+      responses:
+        "200":
+          description: The order (with updated payment status)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Session does not belong to this order or is not paid
         "404":
           description: Not found
 
@@ -372,10 +400,31 @@ components:
         subtotalCents:
           type: integer
 
+    PaymentMethod:
+      type: string
+      enum: [stripe, paysera]
+
+    StripeVerifyInput:
+      type: object
+      required: [orderId, sessionId]
+      properties:
+        orderId:
+          type: integer
+        sessionId:
+          type: string
+
     OrderInput:
       type: object
       required:
-        [cartId, customerName, customerEmail, shippingAddress, city, postalCode]
+        [
+          cartId,
+          customerName,
+          customerEmail,
+          shippingAddress,
+          city,
+          postalCode,
+          paymentMethod,
+        ]
       properties:
         cartId:
           type: string
@@ -389,6 +438,8 @@ components:
           type: string
         postalCode:
           type: string
+        paymentMethod:
+          $ref: "#/components/schemas/PaymentMethod"
 
     OrderItem:
       type: object
@@ -433,6 +484,13 @@ components:
           type: integer
         status:
           type: string
+        paymentMethod:
+          type: string
+        paymentUrl:
+          type: string
+          description: >-
+            Present on order creation only — the URL to redirect the customer
+            to in order to complete payment.
         items:
           type: array
           items:

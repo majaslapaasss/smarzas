@@ -63,6 +63,19 @@ export interface Cart {
   subtotalCents: number;
 }
 
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
+
+
+export const PaymentMethod = {
+  stripe: 'stripe',
+  paysera: 'paysera',
+} as const;
+
+export interface StripeVerifyInput {
+  orderId: number;
+  sessionId: string;
+}
+
 export interface OrderInput {
   cartId: string;
   customerName: string;
@@ -70,6 +83,7 @@ export interface OrderInput {
   shippingAddress: string;
   city: string;
   postalCode: string;
+  paymentMethod: PaymentMethod;
 }
 
 export interface OrderItem {
@@ -88,6 +102,9 @@ export interface Order {
   postalCode: string;
   totalCents: number;
   status: string;
+  paymentMethod?: string;
+  /** Present on order creation only — the URL to redirect the customer to in order to complete payment. */
+  paymentUrl?: string;
   items: OrderItem[];
   createdAt: string;
 }

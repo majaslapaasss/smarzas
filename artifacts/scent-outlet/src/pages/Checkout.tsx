@@ -10,8 +10,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useTranslation } from '@/lib/i18n';
 import { useMemo } from 'react';
+import { CreditCard, Landmark } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 function buildCheckoutSchema(t: (key: string) => string) {
   return z.object({
@@ -20,6 +23,7 @@ function buildCheckoutSchema(t: (key: string) => string) {
     shippingAddress: z.string().min(5, t('validationAddressMin')),
     city: z.string().min(2, t('validationCityMin')),
     postalCode: z.string().min(4, t('validationPostalMin')),
+    paymentMethod: z.enum(['stripe', 'paysera']),
   });
 }
 
@@ -35,6 +39,7 @@ export default function Checkout() {
   });
   const createOrder = useCreateOrder();
   const { toast } = useToast();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -44,6 +49,7 @@ export default function Checkout() {
       shippingAddress: "",
       city: "",
       postalCode: "",
+      paymentMethod: "stripe",
     },
   });
 
@@ -66,14 +72,20 @@ export default function Checkout() {
       },
       {
         onSuccess: (order) => {
-          // Force generating a new cart ID on next visit by clearing it
-          localStorage.removeItem('scent_outlet_cart_id');
-          setLocation(`/order/${order.id}`);
+          // The cart is kept until payment succeeds (the server clears it),
+          // so a cancelled payment doesn't lose the bag.
+          if (order.paymentUrl) {
+            setIsRedirecting(true);
+            window.location.assign(order.paymentUrl);
+          } else {
+            setLocation(`/order/${order.id}`);
+          }
         },
-        onError: () => {
+        onError: (error) => {
+          const serverMessage = (error as { data?: { error?: string } })?.data?.error;
           toast({
             title: t('checkoutFailed'),
-            description: t('checkoutFailedDesc'),
+            description: serverMessage || t('checkoutFailedDesc'),
             variant: "destructive"
           });
         }
@@ -198,17 +210,82 @@ export default function Checkout() {
                   </div>
                 </div>
 
+                <div className="pt-6 border-t border-border space-y-6">
+                  <h2 className="font-serif text-2xl font-medium">{t('paymentMethod')}</h2>
+
+                  <FormField
+                    control={form.control}
+                    name="paymentMethod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                          >
+                            <label
+                              className={cn(
+                                "flex items-start gap-3 rounded-2xl border p-4 cursor-pointer transition-colors",
+                                field.value === "stripe"
+                                  ? "border-primary bg-primary/5"
+                                  : "border-input hover:bg-secondary/30"
+                              )}
+                            >
+                              <RadioGroupItem value="stripe" className="mt-1" />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 font-medium">
+                                  <CreditCard className="h-4 w-4" />
+                                  {t('payCard')}
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {t('payCardDesc')}
+                                </p>
+                              </div>
+                            </label>
+
+                            <label
+                              className={cn(
+                                "flex items-start gap-3 rounded-2xl border p-4 cursor-pointer transition-colors",
+                                field.value === "paysera"
+                                  ? "border-primary bg-primary/5"
+                                  : "border-input hover:bg-secondary/30"
+                              )}
+                            >
+                              <RadioGroupItem value="paysera" className="mt-1" />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 font-medium">
+                                  <Landmark className="h-4 w-4" />
+                                  {t('payPaysera')}
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {t('payPayseraDesc')}
+                                </p>
+                              </div>
+                            </label>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="pt-8 border-t border-border">
-                  <Button 
-                    type="submit" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    size="lg"
                     className="w-full rounded-full h-14 text-lg"
-                    disabled={createOrder.isPending}
+                    disabled={createOrder.isPending || isRedirecting}
                   >
-                    {createOrder.isPending ? t('processing') : t('placeOrder')}
+                    {isRedirecting
+                      ? t('redirectingToPayment')
+                      : createOrder.isPending
+                        ? t('processing')
+                        : t('payNow')}
                   </Button>
                   <p className="text-center text-sm text-muted-foreground mt-4">
-                    {t('demoNote')}
+                    {t('securePaymentNote')}
                   </p>
                 </div>
               </form>

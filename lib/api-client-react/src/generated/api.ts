@@ -33,7 +33,8 @@ import type {
   ListProductsParams,
   Order,
   OrderInput,
-  Product
+  Product,
+  StripeVerifyInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -908,7 +909,7 @@ export const getCreateOrderUrl = () => {
 }
 
 /**
- * Converts a cart into an order and clears the cart. No real payment is processed.
+ * Creates a pending order from a cart and returns a payment redirect URL (Stripe Checkout or Paysera). The cart is cleared once payment succeeds.
  * @summary Place an order (checkout)
  */
 export const createOrder = async (orderInput: OrderInput, options?: RequestInit): Promise<Order> => {
@@ -1071,4 +1072,76 @@ export function useGetOrder<TData = Awaited<ReturnType<typeof getOrder>>, TError
 
 
 
+
+export const getVerifyStripePaymentUrl = () => {
+
+
+
+
+  return `/api/payments/stripe/verify`
+}
+
+/**
+ * Called by the storefront when the customer returns from Stripe Checkout. Confirms the session is paid and marks the order as paid.
+ * @summary Verify a Stripe Checkout session after redirect
+ */
+export const verifyStripePayment = async (stripeVerifyInput: StripeVerifyInput, options?: RequestInit): Promise<Order> => {
+
+  return customFetch<Order>(getVerifyStripePaymentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(stripeVerifyInput)
+  }
+);}
+
+
+
+
+
+export const getVerifyStripePaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyStripePayment>>, TError,{data: BodyType<StripeVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyStripePayment>>, TError,{data: BodyType<StripeVerifyInput>}, TContext> => {
+
+const mutationKey = ['verifyStripePayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyStripePayment>>, {data: BodyType<StripeVerifyInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifyStripePayment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyStripePaymentMutationResult = NonNullable<Awaited<ReturnType<typeof verifyStripePayment>>>
+    export type VerifyStripePaymentMutationBody = BodyType<StripeVerifyInput>
+    export type VerifyStripePaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Verify a Stripe Checkout session after redirect
+ */
+export const useVerifyStripePayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyStripePayment>>, TError,{data: BodyType<StripeVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof verifyStripePayment>>,
+        TError,
+        {data: BodyType<StripeVerifyInput>},
+        TContext
+      > => {
+      return useMutation(getVerifyStripePaymentMutationOptions(options), queryClient);
+    }
 

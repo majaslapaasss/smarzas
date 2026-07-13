@@ -16,5 +16,7 @@ export * from './listProductsParams';
 export * from './order';
 export * from './orderInput';
 export * from './orderItem';
+export * from './paymentMethod';
 export * from './product';
 export * from './productGender';
+export * from './stripeVerifyInput';

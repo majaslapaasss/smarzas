@@ -243,7 +243,7 @@ export const RemoveCartItemResponse = zod.object({
 
 
 /**
- * Converts a cart into an order and clears the cart. No real payment is processed.
+ * Creates a pending order from a cart and returns a payment redirect URL (Stripe Checkout or Paysera). The cart is cleared once payment succeeds.
  * @summary Place an order (checkout)
  */
 export const CreateOrderBody = zod.object({
@@ -252,7 +252,8 @@ export const CreateOrderBody = zod.object({
   "customerEmail": zod.string(),
   "shippingAddress": zod.string(),
   "city": zod.string(),
-  "postalCode": zod.string()
+  "postalCode": zod.string(),
+  "paymentMethod": zod.enum(['stripe', 'paysera'])
 })
 
 export const CreateOrderResponse = zod.object({
@@ -264,6 +265,8 @@ export const CreateOrderResponse = zod.object({
   "postalCode": zod.string(),
   "totalCents": zod.number(),
   "status": zod.string(),
+  "paymentMethod": zod.string().optional(),
+  "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
   "items": zod.array(zod.object({
   "id": zod.number(),
   "quantity": zod.number(),
@@ -303,6 +306,51 @@ export const GetOrderResponse = zod.object({
   "postalCode": zod.string(),
   "totalCents": zod.number(),
   "status": zod.string(),
+  "paymentMethod": zod.string().optional(),
+  "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "quantity": zod.number(),
+  "priceCentsAtPurchase": zod.number(),
+  "product": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "brand": zod.string(),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string(),
+  "priceCents": zod.number(),
+  "imageUrl": zod.string(),
+  "stock": zod.number(),
+  "featured": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+})),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Called by the storefront when the customer returns from Stripe Checkout. Confirms the session is paid and marks the order as paid.
+ * @summary Verify a Stripe Checkout session after redirect
+ */
+export const VerifyStripePaymentBody = zod.object({
+  "orderId": zod.number(),
+  "sessionId": zod.string()
+})
+
+export const VerifyStripePaymentResponse = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string(),
+  "shippingAddress": zod.string(),
+  "city": zod.string(),
+  "postalCode": zod.string(),
+  "totalCents": zod.number(),
+  "status": zod.string(),
+  "paymentMethod": zod.string().optional(),
+  "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
   "items": zod.array(zod.object({
   "id": zod.number(),
   "quantity": zod.number(),

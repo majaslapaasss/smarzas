@@ -30,6 +30,48 @@ Recommended (free) setup: **Neon** for Postgres + **Render** for hosting.
 > inactivity, so the first visit after a quiet period takes ~30–60 seconds.
 > Upgrade the plan if you need it always-on.
 
+## 3. Payments (Stripe + Paysera)
+
+Checkout requires payment. Both providers are configured purely through
+environment variables (set them in the Render dashboard → your service →
+Environment); no code changes are needed to go from test to live.
+
+### Stripe (card payments)
+
+1. Create an account at <https://dashboard.stripe.com> (test mode works
+   without any business verification).
+2. Copy the **secret key** from *Developers → API keys* — `sk_test_...` for
+   test mode, `sk_live_...` for live.
+3. Set `STRIPE_SECRET_KEY` to that value.
+4. *(Optional but recommended for production)* Add a webhook endpoint at
+   *Developers → Webhooks* pointing to
+   `https://YOUR-DOMAIN/api/payments/stripe/webhook` with the
+   `checkout.session.completed` event, and set `STRIPE_WEBHOOK_SECRET` to the
+   endpoint's signing secret (`whsec_...`). Without it, payment is still
+   confirmed when the customer returns to the site (the storefront verifies
+   the Checkout session server-side), but the webhook also covers customers
+   who close the tab right after paying.
+
+Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
+
+### Paysera (bank links / wallet)
+
+1. Register a project at <https://bank.paysera.com> (*Projects and
+   Activities → Add new project*).
+2. Set `PAYSERA_PROJECT_ID` to the project number and
+   `PAYSERA_SIGN_PASSWORD` to the project's sign password.
+3. Keep `PAYSERA_TEST=1` while testing (Paysera lets you simulate payments);
+   set it to `0` once the project is approved for live payments.
+4. In the Paysera project settings, allow your site's address; the callback
+   URL used is `https://YOUR-DOMAIN/api/payments/paysera/callback`.
+
+> Paysera confirms payments via a server-to-server callback, so it only works
+> on a publicly reachable URL (it cannot be tested on localhost without a
+> tunnel).
+
+If a provider's variables are not set, choosing it at checkout shows a clear
+"not configured" error — the other provider keeps working.
+
 ## Deploying elsewhere (VPS or any Node host)
 
 Any host that runs Node.js ≥ 22 works:

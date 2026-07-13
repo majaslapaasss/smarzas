@@ -17,7 +17,12 @@ export const ordersTable = pgTable("orders", {
   city: text("city").notNull(),
   postalCode: text("postal_code").notNull(),
   totalCents: integer("total_cents").notNull(),
-  status: text("status").notNull().default("placed"),
+  // pending = awaiting payment, paid = payment confirmed
+  status: text("status").notNull().default("pending"),
+  // cart is kept until payment succeeds so a cancelled payment doesn't lose it
+  cartId: text("cart_id"),
+  paymentMethod: text("payment_method"),
+  paymentSessionId: text("payment_session_id"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

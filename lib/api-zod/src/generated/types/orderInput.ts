@@ -5,6 +5,7 @@
  * Perfume Baltic perfume store API
  * OpenAPI spec version: 0.1.0
  */
+import type { PaymentMethod } from './paymentMethod';
 
 export interface OrderInput {
   cartId: string;
@@ -13,4 +14,5 @@ export interface OrderInput {
   shippingAddress: string;
   city: string;
   postalCode: string;
+  paymentMethod: PaymentMethod;
 }
