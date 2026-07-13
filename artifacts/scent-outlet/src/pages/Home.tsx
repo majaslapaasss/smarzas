@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { useListFeaturedProducts } from '@workspace/api-client-react';
 import { ProductCard } from '@/components/ProductCard';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 import heroImg from '@assets/generated_images/hero-perfume.jpg';
 import womenImg from '@assets/generated_images/women-category.jpg';
 import menImg from '@assets/generated_images/men-category.jpg';
@@ -9,6 +10,7 @@ import unisexImg from '@assets/generated_images/unisex-category.jpg';
 
 export default function Home() {
   const { data: featuredProducts, isLoading } = useListFeaturedProducts();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -18,28 +20,27 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div className="max-w-2xl">
               <span className="text-primary font-medium tracking-wider uppercase text-sm mb-4 block">
-                Welcome to Perfume Baltic
+                {t('welcomeTo')}
               </span>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-foreground mb-6">
-                Your signature scent, <br />
-                <span className="text-muted-foreground italic">beautifully accessible.</span>
+                {t('heroTitle1')} <br />
+                <span className="text-muted-foreground italic">{t('heroTitle2')}</span>
               </h1>
               <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed">
-                Discover our curated collection of premium fragrances for everyone. 
-                Warm, inviting, and priced without the luxury markup.
+                {t('heroText')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/shop"
                   className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
-                  Shop the Collection
+                  {t('shopCollection')}
                 </Link>
                 <Link
                   href="/shop?featured=true"
                   className="inline-flex items-center justify-center rounded-full border border-input bg-transparent px-8 py-3.5 text-sm font-medium hover:bg-secondary/50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
-                  View Bestsellers
+                  {t('viewBestsellers')}
                 </Link>
               </div>
             </div>
@@ -64,14 +65,14 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
               <h2 className="font-serif text-3xl md:text-4xl font-medium text-foreground mb-4">
-                Loved by Many
+                {t('lovedByMany')}
               </h2>
               <p className="text-muted-foreground max-w-2xl">
-                Our most sought-after fragrances, curated just for you.
+                {t('lovedByManyText')}
               </p>
             </div>
             <Link href="/shop" className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors group">
-              View all products
+              {t('viewAllProducts')}
               <ArrowRight className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
@@ -102,43 +103,43 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-foreground mb-4">
-              Find Your Match
+              {t('findYourMatch')}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Whether you prefer deep woods, fresh florals, or clean aquatic notes, your next signature scent is waiting.
+              {t('findYourMatchText')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="/shop?gender=women" className="group relative aspect-[3/4] overflow-hidden rounded-[2rem] block">
-              <img src={womenImg} alt="Women's Fragrances" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
+              <img src={womenImg} alt={t('womensPerfumes')} className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
-                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">Collection</span>
-                <h3 className="font-serif text-3xl text-white mb-2">Women</h3>
+                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">{t('collection')}</span>
+                <h3 className="font-serif text-3xl text-white mb-2">{t('women')}</h3>
                 <span className="inline-flex items-center text-white/90 text-sm font-medium group-hover:text-white">
-                  Shop now <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('shopNow')} <ArrowRight className="ml-2 h-4 w-4" />
                 </span>
               </div>
             </Link>
 
             <Link href="/shop?gender=unisex" className="group relative aspect-[3/4] overflow-hidden rounded-[2rem] block">
-              <img src={unisexImg} alt="Unisex Fragrances" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
+              <img src={unisexImg} alt={t('unisexScents')} className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
-                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">Collection</span>
-                <h3 className="font-serif text-3xl text-white mb-2">Unisex</h3>
+                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">{t('collection')}</span>
+                <h3 className="font-serif text-3xl text-white mb-2">{t('unisex')}</h3>
                 <span className="inline-flex items-center text-white/90 text-sm font-medium group-hover:text-white">
-                  Shop now <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('shopNow')} <ArrowRight className="ml-2 h-4 w-4" />
                 </span>
               </div>
             </Link>
 
             <Link href="/shop?gender=men" className="group relative aspect-[3/4] overflow-hidden rounded-[2rem] block">
-              <img src={menImg} alt="Men's Fragrances" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
+              <img src={menImg} alt={t('mensCologne')} className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
-                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">Collection</span>
-                <h3 className="font-serif text-3xl text-white mb-2">Men</h3>
+                <span className="text-white/80 text-sm font-medium tracking-wider uppercase mb-2">{t('collection')}</span>
+                <h3 className="font-serif text-3xl text-white mb-2">{t('men')}</h3>
                 <span className="inline-flex items-center text-white/90 text-sm font-medium group-hover:text-white">
-                  Shop now <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('shopNow')} <ArrowRight className="ml-2 h-4 w-4" />
                 </span>
               </div>
             </Link>

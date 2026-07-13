@@ -8,8 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Minus, Plus, ShoppingBag, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@/lib/i18n';
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const [, params] = useRoute('/product/:id');
   const productId = parseInt(params?.id || '0', 10);
   
@@ -47,8 +49,8 @@ export default function ProductDetail() {
   if (isError || !product) {
     return (
       <div className="container mx-auto px-4 py-24 text-center">
-        <h2 className="font-serif text-3xl font-medium mb-4">Product Not Found</h2>
-        <p className="text-muted-foreground">The fragrance you're looking for doesn't exist.</p>
+        <h2 className="font-serif text-3xl font-medium mb-4">{t('productNotFound')}</h2>
+        <p className="text-muted-foreground">{t('productNotFoundText')}</p>
       </div>
     );
   }
@@ -62,8 +64,8 @@ export default function ProductDetail() {
         setIsAdded(true);
         queryClient.invalidateQueries({ queryKey: getGetCartQueryKey(cartId) });
         toast({
-          title: "Added to cart",
-          description: `${quantity}x ${product.name} added to your bag.`,
+          title: t('addedToCartToast'),
+          description: t('addedToCartToastDesc', { quantity, name: product.name }),
         });
         setTimeout(() => setIsAdded(false), 2000);
       }
@@ -85,7 +87,7 @@ export default function ProductDetail() {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              No image available
+              {t('noImageAvailable')}
             </div>
           )}
         </div>
@@ -97,14 +99,14 @@ export default function ProductDetail() {
               {product.brand}
             </span>
             <span className="h-1 w-1 rounded-full bg-border"></span>
-            <span className="text-sm text-muted-foreground capitalize">
-              {product.gender}
+            <span className="text-sm text-muted-foreground">
+              {t(`gender_${product.gender}`)}
             </span>
             {product.featured && (
               <>
                 <span className="h-1 w-1 rounded-full bg-border"></span>
                 <Badge variant="secondary" className="bg-accent text-accent-foreground font-normal">
-                  Bestseller
+                  {t('bestseller')}
                 </Badge>
               </>
             )}
@@ -123,7 +125,7 @@ export default function ProductDetail() {
           </p>
 
           <div className="mb-10">
-            <h3 className="font-medium text-sm text-foreground uppercase tracking-wider mb-4">Scent Notes</h3>
+            <h3 className="font-medium text-sm text-foreground uppercase tracking-wider mb-4">{t('scentNotes')}</h3>
             <div className="flex flex-wrap gap-2">
               {product.scentNotes.map((note) => (
                 <Badge key={note} variant="outline" className="bg-secondary/30 text-foreground px-4 py-1.5 font-normal text-sm rounded-full border-border/50">
@@ -136,7 +138,7 @@ export default function ProductDetail() {
           <div className="pt-8 border-t border-border">
             {isOutOfStock ? (
               <div className="p-4 bg-muted text-center rounded-2xl text-muted-foreground font-medium">
-                Currently Out of Stock
+                {t('outOfStock')}
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row gap-4">
@@ -170,14 +172,14 @@ export default function ProductDetail() {
                   {isAdded ? (
                     <>
                       <Check className="mr-2 h-5 w-5" />
-                      Added to Cart
+                      {t('addedToCart')}
                     </>
                   ) : addCartItem.isPending ? (
-                    "Adding..."
+                    t('addingToCart')
                   ) : (
                     <>
                       <ShoppingBag className="mr-2 h-5 w-5" />
-                      Add to Cart
+                      {t('addToCart')}
                     </>
                   )}
                 </Button>
@@ -187,7 +189,7 @@ export default function ProductDetail() {
             {!isOutOfStock && product.stock <= 5 && (
               <p className="mt-4 text-sm text-destructive font-medium flex items-center justify-center sm:justify-start">
                 <span className="w-2 h-2 rounded-full bg-destructive animate-pulse mr-2"></span>
-                Only {product.stock} left in stock - order soon
+                {t('onlyNLeftInStock', { count: product.stock })}
               </p>
             )}
           </div>

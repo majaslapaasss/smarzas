@@ -3,8 +3,11 @@ import { Product } from '@workspace/api-client-react';
 import { formatPrice } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from '@/lib/i18n';
 
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useTranslation();
+
   return (
     <Link href={`/product/${product.id}`} className="group relative block h-full">
       <Card className="h-full overflow-hidden border-transparent bg-transparent hover:bg-card/50 transition-colors duration-300 hover:shadow-sm">
@@ -18,27 +21,27 @@ export function ProductCard({ product }: { product: Product }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                No Image
+                {t('noImage')}
               </div>
             )}
             {product.featured && (
               <div className="absolute top-3 left-3">
                 <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-foreground hover:bg-background/90">
-                  Featured
+                  {t('featured')}
                 </Badge>
               </div>
             )}
             {product.stock <= 5 && product.stock > 0 && (
               <div className="absolute top-3 right-3">
                 <Badge variant="destructive" className="bg-destructive/10 text-destructive border-transparent">
-                  Only {product.stock} left
+                  {t('onlyNLeft', { count: product.stock })}
                 </Badge>
               </div>
             )}
             {product.stock === 0 && (
               <div className="absolute top-3 right-3">
                 <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                  Sold Out
+                  {t('soldOut')}
                 </Badge>
               </div>
             )}
@@ -54,8 +57,8 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="font-medium text-foreground">
                 {formatPrice(product.priceCents)}
               </span>
-              <span className="text-xs text-muted-foreground capitalize">
-                {product.gender}
+              <span className="text-xs text-muted-foreground">
+                {t(`gender_${product.gender}`)}
               </span>
             </div>
           </div>

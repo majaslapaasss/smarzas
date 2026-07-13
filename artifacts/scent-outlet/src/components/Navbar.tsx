@@ -1,14 +1,44 @@
 import { Link } from 'wouter';
 import { useGetCart } from '@workspace/api-client-react';
 import { useCartId } from '@/lib/utils';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, Globe } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation, Language } from '@/lib/i18n';
+
+function LanguageSwitcher({ className }: { className?: string }) {
+  const { language, setLanguage } = useTranslation();
+
+  const option = (lang: Language, label: string) => (
+    <button
+      onClick={() => setLanguage(lang)}
+      className={cn(
+        'px-1.5 py-0.5 rounded transition-colors',
+        language === lang
+          ? 'font-semibold text-foreground'
+          : 'text-muted-foreground hover:text-foreground'
+      )}
+      aria-pressed={language === lang}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className={cn('flex items-center gap-0.5 text-sm', className)}>
+      <Globe className="h-4 w-4 text-muted-foreground mr-1" />
+      {option('lv', 'LV')}
+      <span className="text-muted-foreground/50">/</span>
+      {option('en', 'EN')}
+    </div>
+  );
+}
 
 export function Navbar() {
   const cartId = useCartId();
   const { data: cart } = useGetCart(cartId, { query: { enabled: !!cartId } });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const cartItemCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
@@ -27,20 +57,21 @@ export function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <Link href="/shop" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              All Fragrances
+              {t('allFragrances')}
             </Link>
             <Link href="/shop?gender=women" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Women
+              {t('women')}
             </Link>
             <Link href="/shop?gender=men" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Men
+              {t('men')}
             </Link>
             <Link href="/shop?gender=unisex" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Unisex
+              {t('unisex')}
             </Link>
           </div>
 
           <div className="flex items-center gap-4">
+            <LanguageSwitcher className="hidden md:flex" />
             <Link href="/cart" className="relative p-2 text-foreground hover:text-primary transition-colors">
               <ShoppingBag className="h-5 w-5" />
               {cartItemCount > 0 && (
@@ -64,17 +95,20 @@ export function Navbar() {
         <div className="md:hidden border-t border-border/40 bg-background">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             <Link href="/shop" className="text-sm font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>
-              All Fragrances
+              {t('allFragrances')}
             </Link>
             <Link href="/shop?gender=women" className="text-sm font-medium text-muted-foreground" onClick={() => setIsMobileMenuOpen(false)}>
-              Women
+              {t('women')}
             </Link>
             <Link href="/shop?gender=men" className="text-sm font-medium text-muted-foreground" onClick={() => setIsMobileMenuOpen(false)}>
-              Men
+              {t('men')}
             </Link>
             <Link href="/shop?gender=unisex" className="text-sm font-medium text-muted-foreground" onClick={() => setIsMobileMenuOpen(false)}>
-              Unisex
+              {t('unisex')}
             </Link>
+            <div className="pt-2 border-t border-border/40">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       )}

@@ -5,6 +5,7 @@ import { Route, Switch, Router as WouterRouter } from 'wouter';
 
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { LanguageProvider } from '@/lib/i18n';
 
 import Home from '@/pages/Home';
 import Shop from '@/pages/Shop';
@@ -39,12 +40,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <LanguageProvider>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

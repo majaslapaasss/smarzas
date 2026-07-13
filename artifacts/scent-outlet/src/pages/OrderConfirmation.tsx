@@ -3,9 +3,10 @@ import { useGetOrder } from '@workspace/api-client-react';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Package, MapPin, Mail, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
+import { useTranslation } from '@/lib/i18n';
 
 export default function OrderConfirmation() {
+  const { t, language } = useTranslation();
   const [, params] = useRoute('/order/:id');
   const orderId = parseInt(params?.id || '0', 10);
   
@@ -24,10 +25,10 @@ export default function OrderConfirmation() {
   if (isError || !order) {
     return (
       <div className="container mx-auto px-4 py-24 text-center max-w-lg">
-        <h1 className="font-serif text-3xl font-medium mb-4">Order Not Found</h1>
-        <p className="text-muted-foreground mb-8">We couldn't find the order you're looking for.</p>
+        <h1 className="font-serif text-3xl font-medium mb-4">{t('orderNotFound')}</h1>
+        <p className="text-muted-foreground mb-8">{t('orderNotFoundText')}</p>
         <Button asChild className="rounded-full">
-          <Link href="/shop">Return to Shop</Link>
+          <Link href="/shop">{t('returnToShop')}</Link>
         </Button>
       </div>
     );
@@ -40,37 +41,41 @@ export default function OrderConfirmation() {
           <CheckCircle2 className="h-10 w-10" />
         </div>
         <h1 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-4">
-          Thank you for your order!
+          {t('thankYou')}
         </h1>
         <p className="text-lg text-muted-foreground">
-          We've received your order and will begin processing it shortly.
+          {t('orderReceived')}
         </p>
       </div>
 
       <div className="bg-card border border-border rounded-3xl overflow-hidden mb-12">
         <div className="p-6 md:p-8 border-b border-border bg-secondary/10 flex flex-wrap gap-6 md:gap-12 justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Order Number</p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('orderNumber')}</p>
             <p className="font-medium text-foreground">#{order.id.toString().padStart(6, '0')}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Date</p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('date')}</p>
             <p className="font-medium text-foreground">
-              {format(new Date(order.createdAt), 'MMMM d, yyyy')}
+              {new Date(order.createdAt).toLocaleDateString(language === 'lv' ? 'lv-LV' : 'en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Total</p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('total')}</p>
             <p className="font-medium text-foreground">{formatPrice(order.totalCents)}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Status</p>
-            <p className="font-medium text-foreground capitalize">{order.status}</p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('status')}</p>
+            <p className="font-medium text-foreground">{t(`status_${order.status}`)}</p>
           </div>
         </div>
 
         <div className="p-6 md:p-8">
-          <h2 className="font-serif text-2xl font-medium mb-6">Order Items</h2>
+          <h2 className="font-serif text-2xl font-medium mb-6">{t('orderItems')}</h2>
           <div className="space-y-6">
             {order.items.map((item) => (
               <div key={item.id} className="flex gap-4">
@@ -90,7 +95,7 @@ export default function OrderConfirmation() {
                     <Link href={`/product/${item.product.id}`} className="font-medium hover:text-primary transition-colors block mb-1">
                       {item.product.name}
                     </Link>
-                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                    <p className="text-sm text-muted-foreground">{t('qty')}: {item.quantity}</p>
                   </div>
                   <div className="text-right font-medium">
                     {formatPrice(item.priceCentsAtPurchase * item.quantity)}
@@ -106,7 +111,7 @@ export default function OrderConfirmation() {
         <div className="bg-secondary/20 p-6 md:p-8 rounded-3xl">
           <h3 className="flex items-center font-medium text-lg mb-4">
             <MapPin className="h-5 w-5 mr-2 text-muted-foreground" />
-            Shipping Details
+            {t('shippingDetails')}
           </h3>
           <p className="text-foreground">{order.customerName}</p>
           <p className="text-muted-foreground">{order.shippingAddress}</p>
@@ -116,18 +121,18 @@ export default function OrderConfirmation() {
         <div className="bg-secondary/20 p-6 md:p-8 rounded-3xl">
           <h3 className="flex items-center font-medium text-lg mb-4">
             <Mail className="h-5 w-5 mr-2 text-muted-foreground" />
-            Contact Info
+            {t('contactInfo')}
           </h3>
           <p className="text-foreground">{order.customerEmail}</p>
           <p className="text-muted-foreground text-sm mt-2">
-            You will receive order updates and tracking information at this email address.
+            {t('emailUpdatesNote')}
           </p>
         </div>
       </div>
 
       <div className="mt-12 text-center">
         <Button asChild size="lg" className="rounded-full px-8">
-          <Link href="/shop">Continue Shopping</Link>
+          <Link href="/shop">{t('continueShopping')}</Link>
         </Button>
       </div>
     </div>

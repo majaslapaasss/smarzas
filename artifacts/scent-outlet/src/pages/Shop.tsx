@@ -13,8 +13,10 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useTranslation } from '@/lib/i18n';
 
 export default function Shop() {
+  const { t } = useTranslation();
   const [location] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   
@@ -61,28 +63,28 @@ export default function Shop() {
   const FilterContent = () => (
     <div className="space-y-6">
       <div className="space-y-3">
-        <h3 className="font-medium text-sm text-foreground">Gender</h3>
+        <h3 className="font-medium text-sm text-foreground">{t('gender')}</h3>
         <Select value={gender || "all"} onValueChange={(val) => setGender(val === "all" ? undefined : val)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Genders" />
+            <SelectValue placeholder={t('allGenders')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Genders</SelectItem>
-            <SelectItem value="women">Women</SelectItem>
-            <SelectItem value="men">Men</SelectItem>
-            <SelectItem value="unisex">Unisex</SelectItem>
+            <SelectItem value="all">{t('allGenders')}</SelectItem>
+            <SelectItem value="women">{t('women')}</SelectItem>
+            <SelectItem value="men">{t('men')}</SelectItem>
+            <SelectItem value="unisex">{t('unisex')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-3">
-        <h3 className="font-medium text-sm text-foreground">Scent Family</h3>
+        <h3 className="font-medium text-sm text-foreground">{t('scentFamily')}</h3>
         <Select value={category || "all"} onValueChange={(val) => setCategory(val === "all" ? undefined : val)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Scents" />
+            <SelectValue placeholder={t('allScents')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Scents</SelectItem>
+            <SelectItem value="all">{t('allScents')}</SelectItem>
             {categories?.map((c) => (
               <SelectItem key={c.id} value={c.slug}>
                 {c.name} ({c.productCount})
@@ -95,7 +97,7 @@ export default function Shop() {
       {hasFilters && (
         <Button variant="outline" className="w-full" onClick={handleClearFilters}>
           <X className="mr-2 h-4 w-4" />
-          Clear Filters
+          {t('clearFilters')}
         </Button>
       )}
     </div>
@@ -106,10 +108,10 @@ export default function Shop() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
           <h1 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-4">
-            Our Collection
+            {t('ourCollection')}
           </h1>
           <p className="text-muted-foreground max-w-xl">
-            Explore our curated selection of fragrances. Use the filters to find your perfect scent.
+            {t('ourCollectionText')}
           </p>
         </div>
         
@@ -118,7 +120,7 @@ export default function Shop() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search fragrances..."
+              placeholder={t('searchPlaceholder')}
               className="pl-9 bg-secondary/30 border-transparent focus-visible:border-primary"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -133,7 +135,7 @@ export default function Shop() {
             </SheetTrigger>
             <SheetContent side="right">
               <SheetHeader className="mb-6">
-                <SheetTitle>Filters</SheetTitle>
+                <SheetTitle>{t('filters')}</SheetTitle>
               </SheetHeader>
               <FilterContent />
             </SheetContent>
@@ -172,12 +174,12 @@ export default function Shop() {
               <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-muted-foreground mb-6">
                 <Search className="h-6 w-6" />
               </div>
-              <h3 className="font-serif text-2xl font-medium text-foreground mb-2">No fragrances found</h3>
+              <h3 className="font-serif text-2xl font-medium text-foreground mb-2">{t('noFragrancesFound')}</h3>
               <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                We couldn't find any products matching your current filters. Try adjusting your search or clearing some filters.
+                {t('noFragrancesFoundText')}
               </p>
               <Button onClick={handleClearFilters} variant="outline" className="rounded-full">
-                Clear all filters
+                {t('clearAllFilters')}
               </Button>
             </div>
           )}

@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@/lib/i18n';
 
 export default function Cart() {
+  const { t } = useTranslation();
   const cartId = useCartId();
   const { data: cart, isLoading } = useGetCart(cartId, { 
     query: { enabled: !!cartId } 
@@ -48,7 +50,7 @@ export default function Cart() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-20 max-w-4xl">
-        <h1 className="font-serif text-3xl md:text-4xl font-medium mb-12">Your Bag</h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-medium mb-12">{t('yourBag')}</h1>
         <div className="space-y-8">
           {[1, 2].map((i) => (
             <div key={i} className="flex gap-6">
@@ -73,13 +75,12 @@ export default function Cart() {
         <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-secondary/50 text-muted-foreground mb-6">
           <ShoppingBag className="h-8 w-8" />
         </div>
-        <h1 className="font-serif text-3xl font-medium mb-4">Your bag is empty</h1>
+        <h1 className="font-serif text-3xl font-medium mb-4">{t('bagEmpty')}</h1>
         <p className="text-muted-foreground mb-8">
-          Looks like you haven't added any fragrances to your bag yet. 
-          Discover your next signature scent today.
+          {t('bagEmptyText')}
         </p>
         <Button asChild size="lg" className="rounded-full px-8">
-          <Link href="/shop">Continue Shopping</Link>
+          <Link href="/shop">{t('continueShopping')}</Link>
         </Button>
       </div>
     );
@@ -87,8 +88,8 @@ export default function Cart() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-6xl">
-      <h1 className="font-serif text-3xl md:text-4xl font-medium mb-12">Your Bag</h1>
-      
+      <h1 className="font-serif text-3xl md:text-4xl font-medium mb-12">{t('yourBag')}</h1>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         <div className="lg:col-span-2 space-y-8">
           {cart.items.map((item) => (
@@ -114,8 +115,8 @@ export default function Cart() {
                     <Link href={`/product/${item.product.id}`} className="font-serif text-lg font-medium hover:text-primary transition-colors block mb-1">
                       {item.product.name}
                     </Link>
-                    <span className="text-sm text-muted-foreground capitalize">
-                      {item.product.gender}
+                    <span className="text-sm text-muted-foreground">
+                      {t(`gender_${item.product.gender}`)}
                     </span>
                   </div>
                   <div className="text-right font-medium">
@@ -148,7 +149,7 @@ export default function Cart() {
                     className="text-sm text-muted-foreground hover:text-destructive flex items-center transition-colors"
                   >
                     <Trash2 className="h-4 w-4 mr-1.5" />
-                    <span className="hidden sm:inline">Remove</span>
+                    <span className="hidden sm:inline">{t('remove')}</span>
                   </button>
                 </div>
               </div>
@@ -158,39 +159,39 @@ export default function Cart() {
 
         <div className="lg:col-span-1">
           <div className="bg-secondary/20 p-8 rounded-3xl sticky top-24">
-            <h2 className="font-serif text-2xl font-medium mb-6">Order Summary</h2>
-            
+            <h2 className="font-serif text-2xl font-medium mb-6">{t('orderSummary')}</h2>
+
             <div className="space-y-4 mb-6 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t('subtotal')}</span>
                 <span className="font-medium text-foreground">{formatPrice(cart.subtotalCents)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="font-medium text-foreground">Calculated at checkout</span>
+                <span className="text-muted-foreground">{t('shipping')}</span>
+                <span className="font-medium text-foreground">{t('calculatedAtCheckout')}</span>
               </div>
             </div>
-            
+
             <div className="border-t border-border pt-6 mb-8">
               <div className="flex justify-between items-end">
-                <span className="font-medium text-foreground">Estimated Total</span>
+                <span className="font-medium text-foreground">{t('estimatedTotal')}</span>
                 <span className="font-serif text-2xl font-medium">{formatPrice(cart.subtotalCents)}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Taxes will be calculated at checkout
+                {t('taxesNote')}
               </p>
             </div>
-            
+
             <Button asChild className="w-full rounded-full h-14 text-base" size="lg">
               <Link href="/checkout">
-                Proceed to Checkout
+                {t('proceedToCheckout')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            
+
             <div className="mt-6 text-center">
               <Link href="/shop" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b border-transparent hover:border-foreground">
-                or Continue Shopping
+                {t('orContinueShopping')}
               </Link>
             </div>
           </div>
