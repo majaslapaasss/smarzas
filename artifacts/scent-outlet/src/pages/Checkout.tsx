@@ -287,6 +287,13 @@ export default function Checkout() {
                   <p className="text-center text-sm text-muted-foreground mt-4">
                     {t('securePaymentNote')}
                   </p>
+                  <p className="text-center text-xs text-muted-foreground mt-2">
+                    {t('agreePrefix')}
+                    <Link href="/terms" className="underline hover:text-foreground">{t('agreeTermsLink')}</Link>
+                    {t('agreeAnd')}
+                    <Link href="/privacy" className="underline hover:text-foreground">{t('agreePrivacyLink')}</Link>
+                    {t('agreeSuffix')}
+                  </p>
                 </div>
               </form>
             </Form>

@@ -28,17 +28,17 @@ export function Footer() {
           <div>
             <h4 className="font-medium text-foreground mb-4">{t('support')}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><span className="hover:text-primary cursor-pointer transition-colors">{t('contactUs')}</span></li>
-              <li><span className="hover:text-primary cursor-pointer transition-colors">{t('shippingReturns')}</span></li>
-              <li><span className="hover:text-primary cursor-pointer transition-colors">{t('faq')}</span></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">{t('contactUs')}</Link></li>
+              <li><Link href="/shipping-returns" className="hover:text-primary transition-colors">{t('shippingReturns')}</Link></li>
+              <li><Link href="/faq" className="hover:text-primary transition-colors">{t('faq')}</Link></li>
             </ul>
           </div>
         </div>
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Perfume Baltic. {t('allRightsReserved')}</p>
           <div className="flex gap-4">
-            <span className="cursor-pointer hover:text-foreground transition-colors">{t('privacyPolicy')}</span>
-            <span className="cursor-pointer hover:text-foreground transition-colors">{t('termsOfService')}</span>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">{t('privacyPolicy')}</Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors">{t('termsOfService')}</Link>
           </div>
         </div>
       </div>
