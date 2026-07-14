@@ -71,6 +71,39 @@ export const PaymentMethod = {
   paysera: 'paysera',
 } as const;
 
+export type ShippingCountry = typeof ShippingCountry[keyof typeof ShippingCountry];
+
+
+export const ShippingCountry = {
+  LV: 'LV',
+  LT: 'LT',
+  EE: 'EE',
+} as const;
+
+export type ShippingCarrier = typeof ShippingCarrier[keyof typeof ShippingCarrier];
+
+
+export const ShippingCarrier = {
+  omniva: 'omniva',
+  dpd: 'dpd',
+  venipak: 'venipak',
+} as const;
+
+export interface ShippingMethod {
+  carrier: ShippingCarrier;
+  label: string;
+  priceCents: number;
+  freeFromCents: number;
+}
+
+export interface PickupPoint {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  zip: string;
+}
+
 export interface StripeVerifyInput {
   orderId: number;
   sessionId: string;
@@ -80,9 +113,9 @@ export interface OrderInput {
   cartId: string;
   customerName: string;
   customerEmail: string;
-  shippingAddress: string;
-  city: string;
-  postalCode: string;
+  shippingCountry: ShippingCountry;
+  shippingCarrier: ShippingCarrier;
+  pickupPointId: string;
   paymentMethod: PaymentMethod;
 }
 
@@ -102,6 +135,9 @@ export interface Order {
   postalCode: string;
   totalCents: number;
   status: string;
+  shippingCarrier?: string;
+  pickupPointName?: string;
+  shippingCents?: number;
   paymentMethod?: string;
   /** Present on order creation only — the URL to redirect the customer to in order to complete payment. */
   paymentUrl?: string;
@@ -113,5 +149,14 @@ export type ListProductsParams = {
 gender?: ProductGender;
 category?: string;
 search?: string;
+};
+
+export type ListShippingMethodsParams = {
+country: ShippingCountry;
+};
+
+export type ListPickupPointsParams = {
+carrier: ShippingCarrier;
+country: ShippingCountry;
 };
 

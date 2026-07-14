@@ -243,6 +243,40 @@ export const RemoveCartItemResponse = zod.object({
 
 
 /**
+ * @summary List delivery options for a destination country
+ */
+export const ListShippingMethodsQueryParams = zod.object({
+  "country": zod.enum(['LV', 'LT', 'EE'])
+})
+
+export const ListShippingMethodsResponseItem = zod.object({
+  "carrier": zod.enum(['omniva', 'dpd', 'venipak']),
+  "label": zod.string(),
+  "priceCents": zod.number(),
+  "freeFromCents": zod.number()
+})
+export const ListShippingMethodsResponse = zod.array(ListShippingMethodsResponseItem)
+
+
+/**
+ * @summary List parcel lockers / pickup points for a carrier and country
+ */
+export const ListPickupPointsQueryParams = zod.object({
+  "carrier": zod.enum(['omniva', 'dpd', 'venipak']),
+  "country": zod.enum(['LV', 'LT', 'EE'])
+})
+
+export const ListPickupPointsResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "city": zod.string(),
+  "zip": zod.string()
+})
+export const ListPickupPointsResponse = zod.array(ListPickupPointsResponseItem)
+
+
+/**
  * Creates a pending order from a cart and returns a payment redirect URL (Stripe Checkout or Paysera). The cart is cleared once payment succeeds.
  * @summary Place an order (checkout)
  */
@@ -250,9 +284,9 @@ export const CreateOrderBody = zod.object({
   "cartId": zod.string(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
-  "shippingAddress": zod.string(),
-  "city": zod.string(),
-  "postalCode": zod.string(),
+  "shippingCountry": zod.enum(['LV', 'LT', 'EE']),
+  "shippingCarrier": zod.enum(['omniva', 'dpd', 'venipak']),
+  "pickupPointId": zod.string(),
   "paymentMethod": zod.enum(['stripe', 'paysera'])
 })
 
@@ -265,6 +299,9 @@ export const CreateOrderResponse = zod.object({
   "postalCode": zod.string(),
   "totalCents": zod.number(),
   "status": zod.string(),
+  "shippingCarrier": zod.string().optional(),
+  "pickupPointName": zod.string().optional(),
+  "shippingCents": zod.number().optional(),
   "paymentMethod": zod.string().optional(),
   "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
   "items": zod.array(zod.object({
@@ -306,6 +343,9 @@ export const GetOrderResponse = zod.object({
   "postalCode": zod.string(),
   "totalCents": zod.number(),
   "status": zod.string(),
+  "shippingCarrier": zod.string().optional(),
+  "pickupPointName": zod.string().optional(),
+  "shippingCents": zod.number().optional(),
   "paymentMethod": zod.string().optional(),
   "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
   "items": zod.array(zod.object({
@@ -349,6 +389,9 @@ export const VerifyStripePaymentResponse = zod.object({
   "postalCode": zod.string(),
   "totalCents": zod.number(),
   "status": zod.string(),
+  "shippingCarrier": zod.string().optional(),
+  "pickupPointName": zod.string().optional(),
+  "shippingCents": zod.number().optional(),
   "paymentMethod": zod.string().optional(),
   "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
   "items": zod.array(zod.object({

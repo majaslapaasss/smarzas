@@ -7,9 +7,13 @@ const content: Record<'en' | 'lv', LegalContent> = {
     title: 'Shipping & Returns',
     sections: [
       {
-        heading: 'Shipping costs',
+        heading: 'Delivery',
+        paragraphs: [
+          'We deliver to parcel lockers and pickup points via Omniva, DPD, and Venipak. You choose the carrier and the exact locker at checkout.',
+        ],
         list: [
-          'Flat delivery fee: €5.00 per order.',
+          'Latvia: from €2.99 depending on the carrier.',
+          'Lithuania and Estonia: from €4.99 depending on the carrier.',
           'Free delivery on all orders of €50.00 or more.',
           'The exact cost is always shown at checkout before you pay.',
         ],
@@ -20,9 +24,8 @@ const content: Record<'en' | 'lv', LegalContent> = {
           'Orders are dispatched within 1–2 business days after payment is confirmed. Estimated delivery after dispatch:',
         ],
         list: [
-          'Latvia: 1–3 business days (courier or parcel locker).',
-          'Estonia and Lithuania: 2–5 business days.',
-          'Rest of the European Union: 5–10 business days.',
+          'Latvia: 1–3 business days.',
+          'Lithuania and Estonia: 2–5 business days.',
         ],
       },
       {
@@ -54,9 +57,13 @@ const content: Record<'en' | 'lv', LegalContent> = {
     title: 'Piegāde un atgriešana',
     sections: [
       {
-        heading: 'Piegādes izmaksas',
+        heading: 'Piegāde',
+        paragraphs: [
+          'Mēs piegādājam uz pakomātiem un saņemšanas vietām ar Omniva, DPD un Venipak. Piegādātāju un konkrēto pakomātu jūs izvēlaties, noformējot pasūtījumu.',
+        ],
         list: [
-          'Fiksēta piegādes maksa: 5,00 EUR par pasūtījumu.',
+          'Latvijā: no 2,99 EUR atkarībā no piegādātāja.',
+          'Lietuvā un Igaunijā: no 4,99 EUR atkarībā no piegādātāja.',
           'Bezmaksas piegāde visiem pasūtījumiem no 50,00 EUR.',
           'Precīzās izmaksas vienmēr redzamas pirms apmaksas, noformējot pasūtījumu.',
         ],
@@ -67,9 +74,8 @@ const content: Record<'en' | 'lv', LegalContent> = {
           'Pasūtījumi tiek nosūtīti 1–2 darba dienu laikā pēc maksājuma apstiprināšanas. Aptuvenais piegādes laiks pēc nosūtīšanas:',
         ],
         list: [
-          'Latvijā: 1–3 darba dienas (kurjers vai pakomāts).',
-          'Igaunijā un Lietuvā: 2–5 darba dienas.',
-          'Pārējā Eiropas Savienībā: 5–10 darba dienas.',
+          'Latvijā: 1–3 darba dienas.',
+          'Lietuvā un Igaunijā: 2–5 darba dienas.',
         ],
       },
       {

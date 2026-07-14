@@ -11,12 +11,16 @@ import { loadCart } from "../lib/cart";
 import { loadOrderForResponse } from "../lib/orders";
 import {
   buildPayseraPaymentUrl,
-  calculateShippingCents,
   createStripeCheckoutSession,
   getBaseUrl,
   isPayseraConfigured,
   isStripeConfigured,
 } from "../lib/payments";
+import {
+  CARRIER_LABELS,
+  findPickupPoint,
+  getShippingCents,
+} from "../lib/shipping";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
@@ -32,9 +36,9 @@ router.post("/orders", async (req, res): Promise<void> => {
     cartId,
     customerName,
     customerEmail,
-    shippingAddress,
-    city,
-    postalCode,
+    shippingCountry,
+    shippingCarrier,
+    pickupPointId,
     paymentMethod,
   } = parsed.data;
 
@@ -58,7 +62,25 @@ router.post("/orders", async (req, res): Promise<void> => {
     return;
   }
 
-  const shippingCents = calculateShippingCents(cart.subtotalCents);
+  let pickupPoint;
+  try {
+    pickupPoint = await findPickupPoint(shippingCarrier, shippingCountry, pickupPointId);
+  } catch {
+    res.status(502).json({
+      error: "Carrier locations are temporarily unavailable. Please try again shortly.",
+    });
+    return;
+  }
+  if (!pickupPoint) {
+    res.status(400).json({ error: "Unknown pickup point" });
+    return;
+  }
+
+  const shippingCents = getShippingCents(
+    shippingCarrier,
+    shippingCountry,
+    cart.subtotalCents,
+  );
   const totalCents = cart.subtotalCents + shippingCents;
 
   const [order] = await db
@@ -66,13 +88,20 @@ router.post("/orders", async (req, res): Promise<void> => {
     .values({
       customerName,
       customerEmail,
-      shippingAddress,
-      city,
-      postalCode,
+      // legacy address columns are filled from the pickup point so older
+      // views (order confirmation) keep rendering a sensible destination
+      shippingAddress: pickupPoint.address || pickupPoint.name,
+      city: pickupPoint.city,
+      postalCode: pickupPoint.zip || "-",
       totalCents,
       status: "pending",
       cartId,
       paymentMethod,
+      shippingCarrier,
+      shippingCountry,
+      pickupPointId,
+      pickupPointName: pickupPoint.name,
+      shippingCents,
     })
     .returning();
 
@@ -106,6 +135,7 @@ router.post("/orders", async (req, res): Promise<void> => {
         })),
         shippingCents,
         baseUrl,
+        `Delivery — ${CARRIER_LABELS[shippingCarrier]}`,
       );
       paymentUrl = session.url;
       await db

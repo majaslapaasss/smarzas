@@ -30,10 +30,14 @@ import type {
   CartItemUpdate,
   Category,
   HealthStatus,
+  ListPickupPointsParams,
   ListProductsParams,
+  ListShippingMethodsParams,
   Order,
   OrderInput,
+  PickupPoint,
   Product,
+  ShippingMethod,
   StripeVerifyInput
 } from './api.schemas';
 
@@ -899,6 +903,222 @@ export const useRemoveCartItem = <TError = ErrorType<void>,
       > => {
       return useMutation(getRemoveCartItemMutationOptions(options), queryClient);
     }
+
+export const getListShippingMethodsUrl = (params: ListShippingMethodsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/shipping/methods?${stringifiedParams}` : `/api/shipping/methods`
+}
+
+/**
+ * @summary List delivery options for a destination country
+ */
+export const listShippingMethods = async (params: ListShippingMethodsParams, options?: RequestInit): Promise<ShippingMethod[]> => {
+
+  return customFetch<ShippingMethod[]>(getListShippingMethodsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListShippingMethodsQueryKey = (params?: ListShippingMethodsParams,) => {
+    return [
+    `/api/shipping/methods`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListShippingMethodsQueryOptions = <TData = Awaited<ReturnType<typeof listShippingMethods>>, TError = ErrorType<unknown>>(params: ListShippingMethodsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListShippingMethodsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listShippingMethods>>> = ({ signal }) => listShippingMethods(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListShippingMethodsQueryResult = NonNullable<Awaited<ReturnType<typeof listShippingMethods>>>
+export type ListShippingMethodsQueryError = ErrorType<unknown>
+
+
+export function useListShippingMethods<TData = Awaited<ReturnType<typeof listShippingMethods>>, TError = ErrorType<unknown>>(
+ params: ListShippingMethodsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listShippingMethods>>,
+          TError,
+          Awaited<ReturnType<typeof listShippingMethods>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListShippingMethods<TData = Awaited<ReturnType<typeof listShippingMethods>>, TError = ErrorType<unknown>>(
+ params: ListShippingMethodsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listShippingMethods>>,
+          TError,
+          Awaited<ReturnType<typeof listShippingMethods>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListShippingMethods<TData = Awaited<ReturnType<typeof listShippingMethods>>, TError = ErrorType<unknown>>(
+ params: ListShippingMethodsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List delivery options for a destination country
+ */
+
+export function useListShippingMethods<TData = Awaited<ReturnType<typeof listShippingMethods>>, TError = ErrorType<unknown>>(
+ params: ListShippingMethodsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShippingMethods>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListShippingMethodsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPickupPointsUrl = (params: ListPickupPointsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/shipping/pickup-points?${stringifiedParams}` : `/api/shipping/pickup-points`
+}
+
+/**
+ * @summary List parcel lockers / pickup points for a carrier and country
+ */
+export const listPickupPoints = async (params: ListPickupPointsParams, options?: RequestInit): Promise<PickupPoint[]> => {
+
+  return customFetch<PickupPoint[]>(getListPickupPointsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPickupPointsQueryKey = (params?: ListPickupPointsParams,) => {
+    return [
+    `/api/shipping/pickup-points`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListPickupPointsQueryOptions = <TData = Awaited<ReturnType<typeof listPickupPoints>>, TError = ErrorType<void>>(params: ListPickupPointsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPickupPointsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPickupPoints>>> = ({ signal }) => listPickupPoints(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPickupPointsQueryResult = NonNullable<Awaited<ReturnType<typeof listPickupPoints>>>
+export type ListPickupPointsQueryError = ErrorType<void>
+
+
+export function useListPickupPoints<TData = Awaited<ReturnType<typeof listPickupPoints>>, TError = ErrorType<void>>(
+ params: ListPickupPointsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPickupPoints>>,
+          TError,
+          Awaited<ReturnType<typeof listPickupPoints>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPickupPoints<TData = Awaited<ReturnType<typeof listPickupPoints>>, TError = ErrorType<void>>(
+ params: ListPickupPointsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPickupPoints>>,
+          TError,
+          Awaited<ReturnType<typeof listPickupPoints>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPickupPoints<TData = Awaited<ReturnType<typeof listPickupPoints>>, TError = ErrorType<void>>(
+ params: ListPickupPointsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List parcel lockers / pickup points for a carrier and country
+ */
+
+export function useListPickupPoints<TData = Awaited<ReturnType<typeof listPickupPoints>>, TError = ErrorType<void>>(
+ params: ListPickupPointsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPickupPoints>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPickupPointsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getCreateOrderUrl = () => {
 

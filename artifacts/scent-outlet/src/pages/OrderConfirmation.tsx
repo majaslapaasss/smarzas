@@ -11,6 +11,16 @@ import { CheckCircle2, Clock, Package, MapPin, Mail, Calendar } from 'lucide-rea
 import { useTranslation } from '@/lib/i18n';
 import { useQueryClient } from '@tanstack/react-query';
 
+const CARRIER_LABELS: Record<string, string> = {
+  omniva: 'Omniva',
+  dpd: 'DPD',
+  venipak: 'Venipak',
+};
+
+function carrierLabel(carrier: string): string {
+  return CARRIER_LABELS[carrier] ?? carrier;
+}
+
 export default function OrderConfirmation() {
   const { t, language } = useTranslation();
   const [, params] = useRoute('/order/:id');
@@ -164,6 +174,11 @@ export default function OrderConfirmation() {
             {t('shippingDetails')}
           </h3>
           <p className="text-foreground">{order.customerName}</p>
+          {order.shippingCarrier && order.pickupPointName && (
+            <p className="text-foreground mt-1">
+              {carrierLabel(order.shippingCarrier)} — {order.pickupPointName}
+            </p>
+          )}
           <p className="text-muted-foreground">{order.shippingAddress}</p>
           <p className="text-muted-foreground">{order.city}, {order.postalCode}</p>
         </div>

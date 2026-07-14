@@ -28,7 +28,7 @@ const content: Record<'en' | 'lv', { title: string; intro: string; items: FaqEnt
       },
       {
         q: 'How much does delivery cost and how long does it take?',
-        a: 'Delivery is €5.00 and free for orders of €50 or more. In Latvia delivery takes 1–3 business days after dispatch; elsewhere in the EU, 5–10 business days.',
+        a: 'We deliver to Omniva, DPD, and Venipak parcel lockers in Latvia, Lithuania, and Estonia — you pick the locker at checkout. Prices start at €2.99 depending on the carrier and country, and delivery is free for orders of €50 or more. In Latvia parcels arrive in 1–3 business days after dispatch; in Lithuania and Estonia, 2–5.',
       },
       {
         q: 'Can I return a perfume?',
@@ -58,7 +58,7 @@ const content: Record<'en' | 'lv', { title: string; intro: string; items: FaqEnt
       },
       {
         q: 'Cik maksā piegāde un cik ilgi tā aizņem?',
-        a: 'Piegāde maksā 5,00 EUR, un pasūtījumiem no 50 EUR tā ir bez maksas. Latvijā piegāde aizņem 1–3 darba dienas pēc nosūtīšanas; citur ES — 5–10 darba dienas.',
+        a: 'Piegādājam uz Omniva, DPD un Venipak pakomātiem Latvijā, Lietuvā un Igaunijā — pakomātu izvēlaties, noformējot pasūtījumu. Cenas sākas no 2,99 EUR atkarībā no piegādātāja un valsts, un pasūtījumiem no 50 EUR piegāde ir bez maksas. Latvijā sūtījums pienāk 1–3 darba dienās pēc nosūtīšanas; Lietuvā un Igaunijā — 2–5.',
       },
       {
         q: 'Vai smaržas var atgriezt?',

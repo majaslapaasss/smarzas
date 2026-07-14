@@ -16,6 +16,9 @@ export interface Order {
   postalCode: string;
   totalCents: number;
   status: string;
+  shippingCarrier?: string;
+  pickupPointName?: string;
+  shippingCents?: number;
   paymentMethod?: string;
   /** Present on order creation only — the URL to redirect the customer to in order to complete payment. */
   paymentUrl?: string;

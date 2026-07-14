@@ -27,6 +27,23 @@ export async function loadOrderForResponse(orderId: number) {
     .innerJoin(productsTable, eq(orderItemsTable.productId, productsTable.id))
     .where(eq(orderItemsTable.orderId, orderId));
 
-  const { cartId, paymentSessionId, paymentMethod, ...rest } = order;
-  return { ...rest, paymentMethod: paymentMethod ?? undefined, items };
+  const {
+    cartId,
+    paymentSessionId,
+    paymentMethod,
+    shippingCarrier,
+    shippingCountry,
+    pickupPointId,
+    pickupPointName,
+    shippingCents,
+    ...rest
+  } = order;
+  return {
+    ...rest,
+    paymentMethod: paymentMethod ?? undefined,
+    shippingCarrier: shippingCarrier ?? undefined,
+    pickupPointName: pickupPointName ?? undefined,
+    shippingCents: shippingCents ?? undefined,
+    items,
+  };
 }

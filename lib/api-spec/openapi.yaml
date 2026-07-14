@@ -216,6 +216,55 @@ paths:
         "404":
           description: Not found
 
+  /shipping/methods:
+    get:
+      operationId: listShippingMethods
+      tags: [orders]
+      summary: List delivery options for a destination country
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/ShippingCountry"
+      responses:
+        "200":
+          description: Available carriers with prices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShippingMethod"
+
+  /shipping/pickup-points:
+    get:
+      operationId: listPickupPoints
+      tags: [orders]
+      summary: List parcel lockers / pickup points for a carrier and country
+      parameters:
+        - name: carrier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/ShippingCarrier"
+        - name: country
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/ShippingCountry"
+      responses:
+        "200":
+          description: Pickup points sorted by city
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PickupPoint"
+        "502":
+          description: Carrier location feed unavailable
+
   /orders:
     post:
       operationId: createOrder
@@ -404,6 +453,42 @@ components:
       type: string
       enum: [stripe, paysera]
 
+    ShippingCountry:
+      type: string
+      enum: [LV, LT, EE]
+
+    ShippingCarrier:
+      type: string
+      enum: [omniva, dpd, venipak]
+
+    ShippingMethod:
+      type: object
+      required: [carrier, label, priceCents, freeFromCents]
+      properties:
+        carrier:
+          $ref: "#/components/schemas/ShippingCarrier"
+        label:
+          type: string
+        priceCents:
+          type: integer
+        freeFromCents:
+          type: integer
+
+    PickupPoint:
+      type: object
+      required: [id, name, address, city, zip]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        zip:
+          type: string
+
     StripeVerifyInput:
       type: object
       required: [orderId, sessionId]
@@ -420,9 +505,9 @@ components:
           cartId,
           customerName,
           customerEmail,
-          shippingAddress,
-          city,
-          postalCode,
+          shippingCountry,
+          shippingCarrier,
+          pickupPointId,
           paymentMethod,
         ]
       properties:
@@ -432,11 +517,11 @@ components:
           type: string
         customerEmail:
           type: string
-        shippingAddress:
-          type: string
-        city:
-          type: string
-        postalCode:
+        shippingCountry:
+          $ref: "#/components/schemas/ShippingCountry"
+        shippingCarrier:
+          $ref: "#/components/schemas/ShippingCarrier"
+        pickupPointId:
           type: string
         paymentMethod:
           $ref: "#/components/schemas/PaymentMethod"
@@ -484,6 +569,12 @@ components:
           type: integer
         status:
           type: string
+        shippingCarrier:
+          type: string
+        pickupPointName:
+          type: string
+        shippingCents:
+          type: integer
         paymentMethod:
           type: string
         paymentUrl:

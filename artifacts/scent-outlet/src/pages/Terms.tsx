@@ -31,7 +31,7 @@ const content: Record<'en' | 'lv', LegalContent> = {
       {
         heading: '4. Delivery',
         paragraphs: [
-          'We deliver within Latvia and the European Union. Delivery costs €5.00 and is free for orders of €50.00 or more. Estimated delivery times and available carriers are described on the Shipping & Returns page.',
+          'We deliver to parcel lockers and pickup points in Latvia, Lithuania, and Estonia via Omniva, DPD, and Venipak. The delivery price depends on the carrier and destination country and is always shown at checkout before you pay; orders of €50.00 or more ship free. Estimated delivery times are described on the Shipping & Returns page.',
           'Risk of loss or damage to the products passes to you when you (or a person designated by you) take physical possession of them.',
         ],
       },
@@ -101,7 +101,7 @@ const content: Record<'en' | 'lv', LegalContent> = {
       {
         heading: '4. Piegāde',
         paragraphs: [
-          'Mēs piegādājam Latvijā un Eiropas Savienībā. Piegāde maksā 5,00 EUR, un pasūtījumiem no 50,00 EUR tā ir bez maksas. Aptuvenie piegādes termiņi un pieejamie piegādātāji aprakstīti lapā "Piegāde un atgriešana".',
+          'Mēs piegādājam uz pakomātiem un saņemšanas vietām Latvijā, Lietuvā un Igaunijā ar Omniva, DPD un Venipak. Piegādes cena ir atkarīga no piegādātāja un galamērķa valsts, un tā vienmēr redzama pirms apmaksas; pasūtījumiem no 50,00 EUR piegāde ir bez maksas. Aptuvenie piegādes termiņi aprakstīti lapā "Piegāde un atgriešana".',
           'Preču nejaušas nozaudēšanas vai bojājuma risks pāriet uz jums brīdī, kad jūs (vai jūsu norādīta persona) saņemat preces savā valdījumā.',
         ],
       },

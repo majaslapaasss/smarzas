@@ -6,13 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PaymentMethod } from './paymentMethod';
+import type { ShippingCarrier } from './shippingCarrier';
+import type { ShippingCountry } from './shippingCountry';
 
 export interface OrderInput {
   cartId: string;
   customerName: string;
   customerEmail: string;
-  shippingAddress: string;
-  city: string;
-  postalCode: string;
+  shippingCountry: ShippingCountry;
+  shippingCarrier: ShippingCarrier;
+  pickupPointId: string;
   paymentMethod: PaymentMethod;
 }

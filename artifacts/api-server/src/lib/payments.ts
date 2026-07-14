@@ -46,6 +46,7 @@ export async function createStripeCheckoutSession(
   items: OrderItemForPayment[],
   shippingCents: number,
   baseUrl: string,
+  shippingLabel = "Shipping",
 ): Promise<{ url: string; sessionId: string }> {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
     (item) => ({
@@ -64,7 +65,7 @@ export async function createStripeCheckoutSession(
       price_data: {
         currency: "eur",
         unit_amount: shippingCents,
-        product_data: { name: "Shipping" },
+        product_data: { name: shippingLabel },
       },
     });
   }
@@ -165,10 +166,6 @@ export function parsePayseraCallback(
 // ---------------------------------------------------------------------------
 // Shared
 // ---------------------------------------------------------------------------
-
-export function calculateShippingCents(subtotalCents: number): number {
-  return subtotalCents >= 5000 ? 0 : 500; // free shipping from €50
-}
 
 /** Marks a pending order as paid and clears the cart it was created from. */
 export async function markOrderPaid(orderId: number): Promise<void> {
