@@ -374,3 +374,193 @@ export const VerifyStripePaymentResponse = zod.object({
 })
 
 
+/**
+ * @summary Log in to the admin panel
+ */
+export const AdminLoginBody = zod.object({
+  "password": zod.string()
+})
+
+export const AdminLoginResponse = zod.object({
+  "token": zod.string()
+})
+
+
+/**
+ * @summary List all orders with their items (newest first)
+ */
+export const AdminListOrdersResponseItem = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string(),
+  "shippingAddress": zod.string(),
+  "city": zod.string(),
+  "postalCode": zod.string(),
+  "totalCents": zod.number(),
+  "status": zod.string(),
+  "paymentMethod": zod.string().optional(),
+  "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "quantity": zod.number(),
+  "priceCentsAtPurchase": zod.number(),
+  "product": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "brand": zod.string(),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string(),
+  "priceCents": zod.number(),
+  "imageUrl": zod.string(),
+  "stock": zod.number(),
+  "featured": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+})),
+  "createdAt": zod.coerce.date()
+})
+export const AdminListOrdersResponse = zod.array(AdminListOrdersResponseItem)
+
+
+/**
+ * @summary Update an order's status
+ */
+export const AdminUpdateOrderStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminUpdateOrderStatusBody = zod.object({
+  "status": zod.enum(['pending', 'paid', 'shipped', 'delivered', 'cancelled'])
+})
+
+export const AdminUpdateOrderStatusResponse = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string(),
+  "shippingAddress": zod.string(),
+  "city": zod.string(),
+  "postalCode": zod.string(),
+  "totalCents": zod.number(),
+  "status": zod.string(),
+  "paymentMethod": zod.string().optional(),
+  "paymentUrl": zod.string().optional().describe('Present on order creation only — the URL to redirect the customer to in order to complete payment.'),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "quantity": zod.number(),
+  "priceCentsAtPurchase": zod.number(),
+  "product": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "brand": zod.string(),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string(),
+  "priceCents": zod.number(),
+  "imageUrl": zod.string(),
+  "stock": zod.number(),
+  "featured": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+})),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Create a product
+ */
+
+
+
+
+export const adminCreateProductBodyStockMin = 0;
+
+
+
+export const AdminCreateProductBody = zod.object({
+  "name": zod.string().min(1),
+  "brand": zod.string().min(1),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string().min(1),
+  "priceCents": zod.number().min(1),
+  "imageUrl": zod.string(),
+  "stock": zod.number().min(adminCreateProductBodyStockMin),
+  "featured": zod.boolean().optional()
+})
+
+export const AdminCreateProductResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "brand": zod.string(),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string(),
+  "priceCents": zod.number(),
+  "imageUrl": zod.string(),
+  "stock": zod.number(),
+  "featured": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update a product (partial)
+ */
+export const AdminUpdateProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const adminUpdateProductBodyStockMin = 0;
+
+
+
+export const AdminUpdateProductBody = zod.object({
+  "name": zod.string().min(1).optional(),
+  "brand": zod.string().min(1).optional(),
+  "gender": zod.enum(['men', 'women', 'unisex']).optional(),
+  "description": zod.string().optional(),
+  "scentNotes": zod.array(zod.string()).optional(),
+  "category": zod.string().min(1).optional(),
+  "priceCents": zod.number().min(1).optional(),
+  "imageUrl": zod.string().optional(),
+  "stock": zod.number().min(adminUpdateProductBodyStockMin).optional(),
+  "featured": zod.boolean().optional()
+})
+
+export const AdminUpdateProductResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "brand": zod.string(),
+  "gender": zod.enum(['men', 'women', 'unisex']),
+  "description": zod.string(),
+  "scentNotes": zod.array(zod.string()),
+  "category": zod.string(),
+  "priceCents": zod.number(),
+  "imageUrl": zod.string(),
+  "stock": zod.number(),
+  "featured": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Fails with 409 when the product appears in past orders — set its stock to 0 instead to stop selling it.
+ * @summary Delete a product
+ */
+export const AdminDeleteProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteProductResponse = zod.void()
+
+

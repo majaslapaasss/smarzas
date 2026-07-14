@@ -72,6 +72,17 @@ Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 If a provider's variables are not set, choosing it at checkout shows a clear
 "not configured" error — the other provider keeps working.
 
+## 4. Admin panel
+
+The store has a built-in admin panel at `https://YOUR-DOMAIN/admin` for
+managing orders (change status: paid → shipped → delivered) and products
+(create, edit prices/stock, feature on homepage, delete).
+
+Set the `ADMIN_PASSWORD` environment variable in Render to enable it — use a
+long, random password (e.g. from a password manager). Until it is set, the
+admin panel refuses all logins. The panel is not linked anywhere in the
+public store; only people who know the URL and the password can use it.
+
 ## Deploying elsewhere (VPS or any Node host)
 
 Any host that runs Node.js ≥ 22 works:

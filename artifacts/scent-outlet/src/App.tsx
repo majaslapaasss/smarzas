@@ -18,6 +18,7 @@ import Privacy from '@/pages/Privacy';
 import ShippingReturns from '@/pages/ShippingReturns';
 import Contact from '@/pages/Contact';
 import Faq from '@/pages/Faq';
+import Admin from '@/pages/Admin';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ function Router() {
           <Route path="/shipping-returns" component={ShippingReturns} />
           <Route path="/contact" component={Contact} />
           <Route path="/faq" component={Faq} />
+          <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>

@@ -25,3 +25,5 @@ services:
         sync: false # the Paysera project's sign password
       - key: PAYSERA_TEST
         value: "1" # 1 = Paysera test payments; set to 0 to accept real money
+      - key: ADMIN_PASSWORD
+        sync: false # password for the /admin panel — pick a long random one

@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminLoginInput';
+export * from './adminSession';
 export * from './cart';
 export * from './cartItem';
 export * from './cartItemInput';
@@ -16,7 +18,11 @@ export * from './listProductsParams';
 export * from './order';
 export * from './orderInput';
 export * from './orderItem';
+export * from './orderStatusUpdate';
+export * from './orderStatusUpdateStatus';
 export * from './paymentMethod';
 export * from './product';
 export * from './productGender';
+export * from './productInput';
+export * from './productUpdate';
 export * from './stripeVerifyInput';
