@@ -184,6 +184,7 @@ export default function OrderConfirmation() {
             {t('contactInfo')}
           </h3>
           <p className="text-foreground">{order.customerEmail}</p>
+          <p className="text-foreground">{order.customerPhone}</p>
           <p className="text-muted-foreground text-sm mt-2">
             {t('emailUpdatesNote')}
           </p>

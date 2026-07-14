@@ -280,10 +280,15 @@ export const ListPickupPointsResponse = zod.array(ListPickupPointsResponseItem)
  * Creates a pending order from a cart and returns a payment redirect URL (Stripe Checkout or Paysera). The cart is cleared once payment succeeds.
  * @summary Place an order (checkout)
  */
+export const createOrderBodyCustomerPhoneMin = 5;
+
+
+
 export const CreateOrderBody = zod.object({
   "cartId": zod.string(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
+  "customerPhone": zod.string().min(createOrderBodyCustomerPhoneMin),
   "shippingCountry": zod.enum(['LV', 'LT', 'EE']),
   "shippingCarrier": zod.enum(['omniva', 'dpd', 'venipak']),
   "pickupPointId": zod.string(),
@@ -294,6 +299,7 @@ export const CreateOrderResponse = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
+  "customerPhone": zod.string(),
   "shippingCarrier": zod.string(),
   "pickupPoint": zod.string().describe('Human-readable locker (\"Name, Street, City ZIP\")'),
   "totalCents": zod.number(),
@@ -335,6 +341,7 @@ export const GetOrderResponse = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
+  "customerPhone": zod.string(),
   "shippingCarrier": zod.string(),
   "pickupPoint": zod.string().describe('Human-readable locker (\"Name, Street, City ZIP\")'),
   "totalCents": zod.number(),
@@ -378,6 +385,7 @@ export const VerifyStripePaymentResponse = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
+  "customerPhone": zod.string(),
   "shippingCarrier": zod.string(),
   "pickupPoint": zod.string().describe('Human-readable locker (\"Name, Street, City ZIP\")'),
   "totalCents": zod.number(),

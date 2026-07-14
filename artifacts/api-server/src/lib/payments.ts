@@ -3,6 +3,7 @@ import type { Request } from "express";
 import Stripe from "stripe";
 import { eq, and } from "drizzle-orm";
 import { cartItemsTable, db, ordersTable, type Order } from "@workspace/db";
+import { sendOrderConfirmationEmail } from "./email";
 
 export type PaymentMethod = "stripe" | "paysera";
 
@@ -167,7 +168,12 @@ export function parsePayseraCallback(
 // Shared
 // ---------------------------------------------------------------------------
 
-/** Marks a pending order as paid and clears the cart it was created from. */
+/**
+ * Marks a pending order as paid, clears the cart it was created from, and
+ * emails the confirmation. The pending→paid guard makes this idempotent, so
+ * the email goes out exactly once even if webhook, callback, and verify all
+ * fire for the same order.
+ */
 export async function markOrderPaid(orderId: number): Promise<void> {
   const [order] = await db
     .update(ordersTable)
@@ -175,9 +181,13 @@ export async function markOrderPaid(orderId: number): Promise<void> {
     .where(and(eq(ordersTable.id, orderId), eq(ordersTable.status, "pending")))
     .returning();
 
-  if (order?.cartId) {
+  if (!order) return;
+
+  if (order.cartId) {
     await db
       .delete(cartItemsTable)
       .where(eq(cartItemsTable.cartId, order.cartId));
   }
+
+  void sendOrderConfirmationEmail(order.id);
 }

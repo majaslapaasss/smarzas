@@ -11,6 +11,7 @@ export interface Order {
   id: number;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
   shippingCarrier: string;
   /** Human-readable locker ("Name, Street, City ZIP") */
   pickupPoint: string;

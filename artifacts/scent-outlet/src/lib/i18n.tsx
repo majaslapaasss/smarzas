@@ -106,6 +106,8 @@ const translations: Record<Language, Record<string, string>> = {
     emailAddress: 'Email Address',
     shippingDetails: 'Shipping Details',
     fullName: 'Full Name',
+    phoneNumber: 'Phone number',
+    phoneNote: 'The carrier sends the locker pickup code to this number.',
     country: 'Country',
     countryLV: 'Latvia',
     countryLT: 'Lithuania',
@@ -142,6 +144,7 @@ const translations: Record<Language, Record<string, string>> = {
     checkoutFailedDesc: 'There was a problem placing your order. Please try again.',
     validationNameMin: 'Name must be at least 2 characters',
     validationEmail: 'Please enter a valid email address',
+    validationPhone: 'Enter a valid phone number (e.g. +371 20 000 000)',
     validationCarrier: 'Choose a delivery method',
     validationPickup: 'Choose a parcel locker',
 
@@ -271,6 +274,8 @@ const translations: Record<Language, Record<string, string>> = {
     emailAddress: 'E-pasta adrese',
     shippingDetails: 'Piegādes informācija',
     fullName: 'Vārds, uzvārds',
+    phoneNumber: 'Tālruņa numurs',
+    phoneNote: 'Uz šo numuru piegādātājs nosūtīs pakomāta saņemšanas kodu.',
     country: 'Valsts',
     countryLV: 'Latvija',
     countryLT: 'Lietuva',
@@ -307,6 +312,7 @@ const translations: Record<Language, Record<string, string>> = {
     checkoutFailedDesc: 'Radās problēma, veicot pasūtījumu. Lūdzu, mēģiniet vēlreiz.',
     validationNameMin: 'Vārdam jābūt vismaz 2 rakstzīmēm',
     validationEmail: 'Lūdzu, ievadiet derīgu e-pasta adresi',
+    validationPhone: 'Ievadiet derīgu tālruņa numuru (piem., +371 20 000 000)',
     validationCarrier: 'Izvēlieties piegādes veidu',
     validationPickup: 'Izvēlieties saņemšanas vietu',
 

@@ -13,6 +13,8 @@ export interface OrderInput {
   cartId: string;
   customerName: string;
   customerEmail: string;
+  /** @minLength 5 */
+  customerPhone: string;
   shippingCountry: ShippingCountry;
   shippingCarrier: ShippingCarrier;
   pickupPointId: string;

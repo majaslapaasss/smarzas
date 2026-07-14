@@ -72,7 +72,27 @@ Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 If a provider's variables are not set, choosing it at checkout shows a clear
 "not configured" error — the other provider keeps working.
 
-## 4. Managing the store
+## 4. Order emails (SMTP)
+
+When a payment is confirmed, the customer automatically receives a bilingual
+(LV/EN) confirmation email with the items, total, chosen parcel locker, and
+phone number. Configure any SMTP mailbox via environment variables in Render:
+
+| Variable | Value |
+| --- | --- |
+| `SMTP_HOST` | e.g. `smtp.gmail.com` |
+| `SMTP_PORT` | `587` (default) or `465` |
+| `SMTP_USER` | the mailbox login, e.g. `yourstore@gmail.com` |
+| `SMTP_PASS` | the mailbox password (Gmail: an **App Password**) |
+| `SMTP_FROM` | optional sender header, e.g. `Perfume Baltic <yourstore@gmail.com>` |
+| `ORDER_NOTIFY_EMAIL` | optional — your address; receives a hidden copy of every confirmation, so you know about new orders instantly |
+
+Gmail setup: enable 2-step verification on the Google account, then create an
+App Password at <https://myaccount.google.com/apppasswords> and use it as
+`SMTP_PASS`. If SMTP variables are not set, orders still work — the email is
+simply skipped (logged as a warning).
+
+## 5. Managing the store
 
 Products and orders are managed directly in the Neon console
 (<https://console.neon.tech>): the **Tables** view edits rows visually and

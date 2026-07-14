@@ -505,6 +505,7 @@ components:
           cartId,
           customerName,
           customerEmail,
+          customerPhone,
           shippingCountry,
           shippingCarrier,
           pickupPointId,
@@ -517,6 +518,9 @@ components:
           type: string
         customerEmail:
           type: string
+        customerPhone:
+          type: string
+          minLength: 5
         shippingCountry:
           $ref: "#/components/schemas/ShippingCountry"
         shippingCarrier:
@@ -545,6 +549,7 @@ components:
         - id
         - customerName
         - customerEmail
+        - customerPhone
         - shippingCarrier
         - pickupPoint
         - totalCents
@@ -558,6 +563,8 @@ components:
         customerName:
           type: string
         customerEmail:
+          type: string
+        customerPhone:
           type: string
         shippingCarrier:
           type: string

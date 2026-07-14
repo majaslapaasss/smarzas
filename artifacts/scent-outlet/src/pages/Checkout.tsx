@@ -41,6 +41,9 @@ function buildCheckoutSchema(t: (key: string) => string) {
   return z.object({
     customerName: z.string().min(2, t('validationNameMin')),
     customerEmail: z.string().email(t('validationEmail')),
+    customerPhone: z
+      .string()
+      .regex(/^\+?[0-9][0-9 ]{6,}$/, t('validationPhone')),
     shippingCountry: z.enum(COUNTRIES),
     shippingCarrier: z.enum(CARRIERS, { message: t('validationCarrier') }),
     pickupPointId: z.string().min(1, t('validationPickup')),
@@ -68,6 +71,7 @@ export default function Checkout() {
     defaultValues: {
       customerName: "",
       customerEmail: "",
+      customerPhone: "",
       shippingCountry: "LV",
       shippingCarrier: "omniva",
       pickupPointId: "",
@@ -187,6 +191,26 @@ export default function Checkout() {
                         <FormControl>
                           <Input placeholder="Jane Doe" className="h-12 bg-background" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="customerPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('phoneNumber')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="tel"
+                            placeholder="+371 20 000 000"
+                            className="h-12 bg-background"
+                            {...field}
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">{t('phoneNote')}</p>
                         <FormMessage />
                       </FormItem>
                     )}

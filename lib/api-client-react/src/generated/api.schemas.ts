@@ -113,6 +113,8 @@ export interface OrderInput {
   cartId: string;
   customerName: string;
   customerEmail: string;
+  /** @minLength 5 */
+  customerPhone: string;
   shippingCountry: ShippingCountry;
   shippingCarrier: ShippingCarrier;
   pickupPointId: string;
@@ -130,6 +132,7 @@ export interface Order {
   id: number;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
   shippingCarrier: string;
   /** Human-readable locker ("Name, Street, City ZIP") */
   pickupPoint: string;

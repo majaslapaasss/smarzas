@@ -17,6 +17,7 @@ export const ordersTable = pgTable("orders", {
   status: text("status").notNull().default("pending"),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
+  customerPhone: text("customer_phone").notNull(),
   shippingCarrier: text("shipping_carrier").notNull(),
   // human-readable locker: "Name, Street, City ZIP"
   pickupPoint: text("pickup_point").notNull(),

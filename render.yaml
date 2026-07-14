@@ -25,3 +25,15 @@ services:
         sync: false # the Paysera project's sign password
       - key: PAYSERA_TEST
         value: "1" # 1 = Paysera test payments; set to 0 to accept real money
+      - key: SMTP_HOST
+        sync: false # e.g. smtp.gmail.com — see DEPLOY.md "Order emails"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false # mailbox login, e.g. yourstore@gmail.com
+      - key: SMTP_PASS
+        sync: false # for Gmail: an App Password, not your normal password
+      - key: SMTP_FROM
+        sync: false # optional: 'Perfume Baltic <yourstore@gmail.com>'
+      - key: ORDER_NOTIFY_EMAIL
+        sync: false # optional: your address to receive a copy of every order
