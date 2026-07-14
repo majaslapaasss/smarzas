@@ -71,65 +71,6 @@ export const PaymentMethod = {
   paysera: 'paysera',
 } as const;
 
-export interface AdminLoginInput {
-  password: string;
-}
-
-export interface AdminSession {
-  token: string;
-}
-
-export type OrderStatusUpdateStatus = typeof OrderStatusUpdateStatus[keyof typeof OrderStatusUpdateStatus];
-
-
-export const OrderStatusUpdateStatus = {
-  pending: 'pending',
-  paid: 'paid',
-  shipped: 'shipped',
-  delivered: 'delivered',
-  cancelled: 'cancelled',
-} as const;
-
-export interface OrderStatusUpdate {
-  status: OrderStatusUpdateStatus;
-}
-
-export interface ProductInput {
-  /** @minLength 1 */
-  name: string;
-  /** @minLength 1 */
-  brand: string;
-  gender: ProductGender;
-  description: string;
-  scentNotes: string[];
-  /** @minLength 1 */
-  category: string;
-  /** @minimum 1 */
-  priceCents: number;
-  imageUrl: string;
-  /** @minimum 0 */
-  stock: number;
-  featured?: boolean;
-}
-
-export interface ProductUpdate {
-  /** @minLength 1 */
-  name?: string;
-  /** @minLength 1 */
-  brand?: string;
-  gender?: ProductGender;
-  description?: string;
-  scentNotes?: string[];
-  /** @minLength 1 */
-  category?: string;
-  /** @minimum 1 */
-  priceCents?: number;
-  imageUrl?: string;
-  /** @minimum 0 */
-  stock?: number;
-  featured?: boolean;
-}
-
 export interface StripeVerifyInput {
   orderId: number;
   sessionId: string;
