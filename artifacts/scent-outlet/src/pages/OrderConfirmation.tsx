@@ -174,13 +174,8 @@ export default function OrderConfirmation() {
             {t('shippingDetails')}
           </h3>
           <p className="text-foreground">{order.customerName}</p>
-          {order.shippingCarrier && order.pickupPointName && (
-            <p className="text-foreground mt-1">
-              {carrierLabel(order.shippingCarrier)} — {order.pickupPointName}
-            </p>
-          )}
-          <p className="text-muted-foreground">{order.shippingAddress}</p>
-          <p className="text-muted-foreground">{order.city}, {order.postalCode}</p>
+          <p className="text-foreground mt-1">{carrierLabel(order.shippingCarrier)}</p>
+          <p className="text-muted-foreground">{order.pickupPoint}</p>
         </div>
         
         <div className="bg-secondary/20 p-6 md:p-8 rounded-3xl">

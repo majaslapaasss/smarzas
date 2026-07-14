@@ -9,29 +9,29 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { productsTable } from "./products";
 
+// Columns are ordered for comfortable browsing in a database console:
+// what you need to ship an order comes first, bookkeeping fields last.
 export const ordersTable = pgTable("orders", {
   id: serial("id").primaryKey(),
-  customerName: text("customer_name").notNull(),
-  customerEmail: text("customer_email").notNull(),
-  shippingAddress: text("shipping_address").notNull(),
-  city: text("city").notNull(),
-  postalCode: text("postal_code").notNull(),
-  totalCents: integer("total_cents").notNull(),
   // pending = awaiting payment, paid = payment confirmed
   status: text("status").notNull().default("pending"),
-  // cart is kept until payment succeeds so a cancelled payment doesn't lose it
-  cartId: text("cart_id"),
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email").notNull(),
+  shippingCarrier: text("shipping_carrier").notNull(),
+  // human-readable locker: "Name, Street, City ZIP"
+  pickupPoint: text("pickup_point").notNull(),
+  totalCents: integer("total_cents").notNull(),
+  shippingCents: integer("shipping_cents").notNull().default(0),
   paymentMethod: text("payment_method"),
-  paymentSessionId: text("payment_session_id"),
-  // parcel locker / pickup point delivery
-  shippingCarrier: text("shipping_carrier"),
-  shippingCountry: text("shipping_country"),
-  pickupPointId: text("pickup_point_id"),
-  pickupPointName: text("pickup_point_name"),
-  shippingCents: integer("shipping_cents"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+  // --- bookkeeping (needed by the system, rarely by a human) ---
+  shippingCountry: text("shipping_country").notNull(),
+  pickupPointId: text("pickup_point_id").notNull(),
+  // cart is kept until payment succeeds so a cancelled payment doesn't lose it
+  cartId: text("cart_id"),
+  paymentSessionId: text("payment_session_id"),
 });
 
 export const insertOrderSchema = createInsertSchema(ordersTable).omit({

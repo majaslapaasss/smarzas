@@ -83,25 +83,28 @@ router.post("/orders", async (req, res): Promise<void> => {
   );
   const totalCents = cart.subtotalCents + shippingCents;
 
+  const pickupPointLabel = [
+    pickupPoint.name,
+    pickupPoint.address,
+    [pickupPoint.city, pickupPoint.zip].filter(Boolean).join(" "),
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   const [order] = await db
     .insert(ordersTable)
     .values({
+      status: "pending",
       customerName,
       customerEmail,
-      // legacy address columns are filled from the pickup point so older
-      // views (order confirmation) keep rendering a sensible destination
-      shippingAddress: pickupPoint.address || pickupPoint.name,
-      city: pickupPoint.city,
-      postalCode: pickupPoint.zip || "-",
-      totalCents,
-      status: "pending",
-      cartId,
-      paymentMethod,
       shippingCarrier,
+      pickupPoint: pickupPointLabel,
+      totalCents,
+      shippingCents,
+      paymentMethod,
       shippingCountry,
       pickupPointId,
-      pickupPointName: pickupPoint.name,
-      shippingCents,
+      cartId,
     })
     .returning();
 

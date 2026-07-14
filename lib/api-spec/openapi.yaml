@@ -545,10 +545,10 @@ components:
         - id
         - customerName
         - customerEmail
-        - shippingAddress
-        - city
-        - postalCode
+        - shippingCarrier
+        - pickupPoint
         - totalCents
+        - shippingCents
         - status
         - items
         - createdAt
@@ -559,22 +559,17 @@ components:
           type: string
         customerEmail:
           type: string
-        shippingAddress:
+        shippingCarrier:
           type: string
-        city:
+        pickupPoint:
           type: string
-        postalCode:
-          type: string
+          description: Human-readable locker ("Name, Street, City ZIP")
         totalCents:
+          type: integer
+        shippingCents:
           type: integer
         status:
           type: string
-        shippingCarrier:
-          type: string
-        pickupPointName:
-          type: string
-        shippingCents:
-          type: integer
         paymentMethod:
           type: string
         paymentUrl:

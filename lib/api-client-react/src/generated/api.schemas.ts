@@ -130,14 +130,12 @@ export interface Order {
   id: number;
   customerName: string;
   customerEmail: string;
-  shippingAddress: string;
-  city: string;
-  postalCode: string;
+  shippingCarrier: string;
+  /** Human-readable locker ("Name, Street, City ZIP") */
+  pickupPoint: string;
   totalCents: number;
+  shippingCents: number;
   status: string;
-  shippingCarrier?: string;
-  pickupPointName?: string;
-  shippingCents?: number;
   paymentMethod?: string;
   /** Present on order creation only — the URL to redirect the customer to in order to complete payment. */
   paymentUrl?: string;
