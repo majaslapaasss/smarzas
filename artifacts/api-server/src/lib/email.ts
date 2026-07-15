@@ -30,6 +30,32 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
+/**
+ * Called at startup: reports loudly in the logs whether order emails are
+ * configured, and test-connects to the SMTP server so a wrong host or
+ * password is visible immediately instead of at the first order.
+ */
+export async function verifyEmailSetup(): Promise<void> {
+  if (!isEmailConfigured()) {
+    logger.warn(
+      "ORDER EMAILS DISABLED — set SMTP_HOST, SMTP_USER and SMTP_PASS environment variables to enable them",
+    );
+    return;
+  }
+  try {
+    await getTransporter().verify();
+    logger.info(
+      { host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
+      "ORDER EMAILS ENABLED — SMTP connection and login verified",
+    );
+  } catch (err) {
+    logger.error(
+      { err, host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
+      "ORDER EMAILS BROKEN — SMTP settings are present but the connection/login failed (check SMTP_PASS is a Gmail App Password, not the normal password)",
+    );
+  }
+}
+
 function eur(cents: number): string {
   return `€${(cents / 100).toFixed(2)}`;
 }
