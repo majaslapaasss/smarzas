@@ -8,8 +8,58 @@ const CARRIER_EMAIL_LABELS: Record<string, string> = {
   venipak: "Venipak",
 };
 
-export function isEmailConfigured(): boolean {
+// ---------------------------------------------------------------------------
+// Transports. Preferred: Brevo HTTPS API — Render's free tier blocks all
+// outbound SMTP ports (25/465/587), so classic SMTP only works on paid
+// instances or other hosts. SMTP remains supported as a fallback.
+// ---------------------------------------------------------------------------
+
+interface EmailMessage {
+  to: string;
+  bcc?: string;
+  subject: string;
+  text: string;
+  html: string;
+}
+
+function isBrevoConfigured(): boolean {
+  return !!process.env.BREVO_API_KEY && !!process.env.EMAIL_FROM;
+}
+
+function isSmtpConfigured(): boolean {
   return !!process.env.SMTP_HOST && !!process.env.SMTP_USER && !!process.env.SMTP_PASS;
+}
+
+export function isEmailConfigured(): boolean {
+  return isBrevoConfigured() || isSmtpConfigured();
+}
+
+async function sendViaBrevo(message: EmailMessage): Promise<void> {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": process.env.BREVO_API_KEY!,
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: process.env.EMAIL_FROM_NAME ?? "Perfume Baltic",
+        email: process.env.EMAIL_FROM,
+      },
+      to: [{ email: message.to }],
+      ...(message.bcc ? { bcc: [{ email: message.bcc }] } : {}),
+      subject: message.subject,
+      textContent: message.text,
+      htmlContent: message.html,
+    }),
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Brevo API error ${res.status}: ${body}`);
+  }
 }
 
 let transporter: Transporter | null = null;
@@ -30,31 +80,75 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
-/**
- * Called at startup: reports loudly in the logs whether order emails are
- * configured, and test-connects to the SMTP server so a wrong host or
- * password is visible immediately instead of at the first order.
- */
-export async function verifyEmailSetup(): Promise<void> {
-  if (!isEmailConfigured()) {
-    logger.warn(
-      "ORDER EMAILS DISABLED — set SMTP_HOST, SMTP_USER and SMTP_PASS environment variables to enable them",
-    );
-    return;
-  }
-  try {
-    await getTransporter().verify();
-    logger.info(
-      { host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
-      "ORDER EMAILS ENABLED — SMTP connection and login verified",
-    );
-  } catch (err) {
-    logger.error(
-      { err, host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
-      "ORDER EMAILS BROKEN — SMTP settings are present but the connection/login failed (check SMTP_PASS is a Gmail App Password, not the normal password)",
-    );
+async function sendViaSmtp(message: EmailMessage): Promise<void> {
+  await getTransporter().sendMail({
+    from: process.env.SMTP_FROM ?? `"Perfume Baltic" <${process.env.SMTP_USER}>`,
+    to: message.to,
+    bcc: message.bcc,
+    subject: message.subject,
+    text: message.text,
+    html: message.html,
+  });
+}
+
+async function sendEmail(message: EmailMessage): Promise<void> {
+  if (isBrevoConfigured()) {
+    await sendViaBrevo(message);
+  } else {
+    await sendViaSmtp(message);
   }
 }
+
+/**
+ * Called at startup: reports loudly in the logs whether order emails are
+ * configured, and test-connects to the provider so a wrong key or password
+ * is visible immediately instead of at the first order.
+ */
+export async function verifyEmailSetup(): Promise<void> {
+  if (isBrevoConfigured()) {
+    try {
+      const res = await fetch("https://api.brevo.com/v3/account", {
+        headers: { "api-key": process.env.BREVO_API_KEY!, accept: "application/json" },
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!res.ok) throw new Error(`Brevo API responded ${res.status}`);
+      logger.info(
+        { from: process.env.EMAIL_FROM },
+        "ORDER EMAILS ENABLED — Brevo API key verified",
+      );
+    } catch (err) {
+      logger.error(
+        { err },
+        "ORDER EMAILS BROKEN — BREVO_API_KEY is set but the Brevo API rejected it",
+      );
+    }
+    return;
+  }
+
+  if (isSmtpConfigured()) {
+    try {
+      await getTransporter().verify();
+      logger.info(
+        { host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
+        "ORDER EMAILS ENABLED — SMTP connection and login verified",
+      );
+    } catch (err) {
+      logger.error(
+        { err, host: process.env.SMTP_HOST, user: process.env.SMTP_USER },
+        "ORDER EMAILS BROKEN — SMTP is configured but unreachable. NOTE: Render's free tier blocks all outbound SMTP ports; use Brevo (BREVO_API_KEY + EMAIL_FROM) or a paid instance",
+      );
+    }
+    return;
+  }
+
+  logger.warn(
+    "ORDER EMAILS DISABLED — set BREVO_API_KEY + EMAIL_FROM (recommended on Render free tier) or SMTP_HOST/SMTP_USER/SMTP_PASS",
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Order confirmation message
+// ---------------------------------------------------------------------------
 
 function eur(cents: number): string {
   return `€${(cents / 100).toFixed(2)}`;
@@ -77,7 +171,7 @@ function escapeHtml(text: string): string {
 export async function sendOrderConfirmationEmail(orderId: number): Promise<void> {
   try {
     if (!isEmailConfigured()) {
-      logger.warn({ orderId }, "SMTP not configured; skipping order confirmation email");
+      logger.warn({ orderId }, "Email not configured; skipping order confirmation email");
       return;
     }
 
@@ -177,8 +271,7 @@ export async function sendOrderConfirmationEmail(orderId: number): Promise<void>
       `When the parcel reaches the locker, ${carrier} will send you an SMS.`,
     ].join("\n");
 
-    await getTransporter().sendMail({
-      from: process.env.SMTP_FROM ?? `"Perfume Baltic" <${process.env.SMTP_USER}>`,
+    await sendEmail({
       to: order.customerEmail,
       bcc: process.env.ORDER_NOTIFY_EMAIL || undefined,
       subject: `Pasūtījums / Order ${orderNo} — Perfume Baltic`,

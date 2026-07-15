@@ -72,25 +72,44 @@ Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 If a provider's variables are not set, choosing it at checkout shows a clear
 "not configured" error — the other provider keeps working.
 
-## 4. Order emails (SMTP)
+## 4. Order emails
 
 When a payment is confirmed, the customer automatically receives a bilingual
 (LV/EN) confirmation email with the items, total, chosen parcel locker, and
-phone number. Configure any SMTP mailbox via environment variables in Render:
+phone number.
+
+> **Important:** Render's **free tier blocks all outbound SMTP ports**
+> (25/465/587), so Gmail/Inbox SMTP cannot work there — connections time
+> out. Use Brevo's HTTPS API instead (free, 300 emails/day), or upgrade to
+> a paid Render instance if you prefer classic SMTP.
+
+### Brevo setup (recommended, ~10 minutes)
+
+1. Sign up free at <https://www.brevo.com>.
+2. Verify your sender: **Settings → Senders & Domains → Senders → Add a
+   sender** — enter the address you want emails to come from (a Gmail
+   address works); Brevo emails a confirmation code to it.
+3. Create an API key: **Settings → SMTP & API → API Keys → Generate a new
+   API key** — it looks like `xkeysib-...`.
+4. In Render → Environment set:
 
 | Variable | Value |
 | --- | --- |
-| `SMTP_HOST` | e.g. `smtp.gmail.com` |
-| `SMTP_PORT` | `587` (default) or `465` |
-| `SMTP_USER` | the mailbox login, e.g. `yourstore@gmail.com` |
-| `SMTP_PASS` | the mailbox password (Gmail: an **App Password**) |
-| `SMTP_FROM` | optional sender header, e.g. `Perfume Baltic <yourstore@gmail.com>` |
+| `BREVO_API_KEY` | the `xkeysib-...` key |
+| `EMAIL_FROM` | the verified sender address from step 2 |
+| `EMAIL_FROM_NAME` | optional display name (default "Perfume Baltic") |
 | `ORDER_NOTIFY_EMAIL` | optional — your address; receives a hidden copy of every confirmation, so you know about new orders instantly |
 
-Gmail setup: enable 2-step verification on the Google account, then create an
-App Password at <https://myaccount.google.com/apppasswords> and use it as
-`SMTP_PASS`. If SMTP variables are not set, orders still work — the email is
-simply skipped (logged as a warning).
+### Classic SMTP (paid instances / other hosts only)
+
+Set `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASS`, and optional
+`SMTP_FROM`. For Gmail, `SMTP_PASS` must be an App Password
+(<https://myaccount.google.com/apppasswords>). Brevo takes precedence when
+both are configured.
+
+On startup the server logs `ORDER EMAILS ENABLED / BROKEN / DISABLED` with
+the reason — check Render → Logs after changing these variables. If email
+is not configured, orders still work; the email is simply skipped.
 
 ## 5. Managing the store
 

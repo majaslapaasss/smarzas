@@ -25,15 +25,20 @@ services:
         sync: false # the Paysera project's sign password
       - key: PAYSERA_TEST
         value: "1" # 1 = Paysera test payments; set to 0 to accept real money
+      # Order emails — Render's FREE tier blocks all outbound SMTP ports, so
+      # use Brevo's HTTPS API (free at brevo.com): see DEPLOY.md "Order emails"
+      - key: BREVO_API_KEY
+        sync: false # xkeysib-... from Brevo → SMTP & API → API Keys
+      - key: EMAIL_FROM
+        sync: false # sender address — must be a verified sender in Brevo
+      - key: ORDER_NOTIFY_EMAIL
+        sync: false # optional: your address to receive a copy of every order
+      # Classic SMTP fallback (only works on paid Render instances / other hosts)
       - key: SMTP_HOST
-        sync: false # e.g. smtp.gmail.com — see DEPLOY.md "Order emails"
+        sync: false
       - key: SMTP_PORT
         value: "587"
       - key: SMTP_USER
-        sync: false # mailbox login, e.g. yourstore@gmail.com
+        sync: false
       - key: SMTP_PASS
-        sync: false # for Gmail: an App Password, not your normal password
-      - key: SMTP_FROM
-        sync: false # optional: 'Perfume Baltic <yourstore@gmail.com>'
-      - key: ORDER_NOTIFY_EMAIL
-        sync: false # optional: your address to receive a copy of every order
+        sync: false
